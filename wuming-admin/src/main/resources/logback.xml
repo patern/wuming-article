@@ -72,7 +72,7 @@
     </appender>
 	
 	<!-- 系统模块日志级别控制  -->
-	<logger name="com.violet mist" level="info" />
+	<logger name="com.wuming" level="info" />
 	<!-- Spring日志级别控制  -->
 	<logger name="org.springframework" level="warn" />
 

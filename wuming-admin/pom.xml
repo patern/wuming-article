@@ -48,7 +48,11 @@
             <groupId>com.wuming</groupId>
             <artifactId>wuming-framework</artifactId>
         </dependency>
-
+        <!-- 核心模块-->
+        <dependency>
+            <groupId>com.wuming</groupId>
+            <artifactId>wuming-article-service</artifactId>
+        </dependency>
         <!-- 定时任务-->
         <dependency>
             <groupId>com.wuming</groupId>

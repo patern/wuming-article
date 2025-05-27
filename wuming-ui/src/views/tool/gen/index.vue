@@ -266,7 +266,7 @@ export default {
           this.$modal.msgSuccess("成功生成到自定义路径：" + row.genPath)
         })
       } else {
-        this.$download.zip("/tool/gen/batchGenCode?tables=" + tableNames, "violet mist.zip")
+        this.$download.zip("/tool/gen/batchGenCode?tables=" + tableNames, "wuming.zip")
       }
     },
     /** 同步数据库操作 */

@@ -211,6 +211,13 @@
                 <version>${wuming.version}</version>
             </dependency>
 
+            <!-- 系统模块-->
+            <dependency>
+                <groupId>com.wuming</groupId>
+                <artifactId>wuming-article-service</artifactId>
+                <version>${wuming.version}</version>
+            </dependency>
+
             <!-- 通用工具-->
             <dependency>
                 <groupId>com.wuming</groupId>
