@@ -74,7 +74,7 @@
       <el-table-column label="评论编号" align="center" prop="commentId" />
       <el-table-column label="打卡编号" align="center" prop="articleId" />
       <el-table-column label="用户编号" align="center" prop="userId" />
-      <el-table-column label="公告标题" align="center" prop="commentContent" />
+      <el-table-column label="打卡标题" align="center" prop="commentContent" />
       <el-table-column label="评论类型" align="center" prop="commentType" />
       <el-table-column label="评论状态" align="center" prop="status" />
       <el-table-column label="备注" align="center" prop="remark" />
@@ -115,7 +115,7 @@
         <el-form-item label="用户编号" prop="userId">
           <el-input v-model="form.userId" placeholder="请输入用户编号" />
         </el-form-item>
-        <el-form-item label="公告标题">
+        <el-form-item label="打卡标题">
           <editor v-model="form.commentContent" :min-height="192"/>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
@@ -176,7 +176,7 @@ export default {
           { required: true, message: "用户编号不能为空", trigger: "blur" }
         ],
         commentContent: [
-          { required: true, message: "公告标题不能为空", trigger: "blur" }
+          { required: true, message: "打卡标题不能为空", trigger: "blur" }
         ],
         commentType: [
           { required: true, message: "评论类型不能为空", trigger: "change" }

@@ -1,10 +1,10 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="公告标题" prop="articleTitle">
+      <el-form-item label="打卡标题" prop="articleTitle">
         <el-input
           v-model="queryParams.articleTitle"
-          placeholder="请输入公告标题"
+          placeholder="请输入打卡标题"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -72,11 +72,11 @@
     <el-table v-loading="loading" :data="articleList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="打卡编号" align="center" prop="articleId" />
-      <el-table-column label="公告标题" align="center" prop="articleTitle" />
-      <el-table-column label="公告类型" align="center" prop="articleType" />
-      <el-table-column label="公告内容" align="center" prop="articleContent" />
+      <el-table-column label="打卡标题" align="center" prop="articleTitle" />
+      <el-table-column label="打卡类型" align="center" prop="articleType" />
+      <el-table-column label="打卡内容" align="center" prop="articleContent" />
       <el-table-column label="打卡链接" align="center" prop="articleAttaUrl" />
-      <el-table-column label="公告状态" align="center" prop="status" />
+      <el-table-column label="打卡状态" align="center" prop="status" />
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -109,10 +109,10 @@
     <!-- 添加或修改打卡对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="公告标题" prop="articleTitle">
-          <el-input v-model="form.articleTitle" placeholder="请输入公告标题" />
+        <el-form-item label="打卡标题" prop="articleTitle">
+          <el-input v-model="form.articleTitle" placeholder="请输入打卡标题" />
         </el-form-item>
-        <el-form-item label="公告内容">
+        <el-form-item label="打卡内容">
           <editor v-model="form.articleContent" :min-height="192"/>
         </el-form-item>
         <el-form-item label="打卡链接" prop="articleAttaUrl">
@@ -170,10 +170,10 @@ export default {
       // 表单校验
       rules: {
         articleTitle: [
-          { required: true, message: "公告标题不能为空", trigger: "blur" }
+          { required: true, message: "打卡标题不能为空", trigger: "blur" }
         ],
         articleType: [
-          { required: true, message: "公告类型不能为空", trigger: "change" }
+          { required: true, message: "打卡类型不能为空", trigger: "change" }
         ],
       }
     }
