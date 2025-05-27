@@ -9,10 +9,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="文章链接" prop="articleAttaUrl">
+      <el-form-item label="打卡链接" prop="articleAttaUrl">
         <el-input
           v-model="queryParams.articleAttaUrl"
-          placeholder="请输入文章链接"
+          placeholder="请输入打卡链接"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -71,11 +71,11 @@
 
     <el-table v-loading="loading" :data="articleList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="文章ID" align="center" prop="articleId" />
+      <el-table-column label="打卡编号" align="center" prop="articleId" />
       <el-table-column label="公告标题" align="center" prop="articleTitle" />
       <el-table-column label="公告类型" align="center" prop="articleType" />
       <el-table-column label="公告内容" align="center" prop="articleContent" />
-      <el-table-column label="文章链接" align="center" prop="articleAttaUrl" />
+      <el-table-column label="打卡链接" align="center" prop="articleAttaUrl" />
       <el-table-column label="公告状态" align="center" prop="status" />
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -97,7 +97,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -106,7 +106,7 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改文章对话框 -->
+    <!-- 添加或修改打卡对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="公告标题" prop="articleTitle">
@@ -115,8 +115,8 @@
         <el-form-item label="公告内容">
           <editor v-model="form.articleContent" :min-height="192"/>
         </el-form-item>
-        <el-form-item label="文章链接" prop="articleAttaUrl">
-          <el-input v-model="form.articleAttaUrl" placeholder="请输入文章链接" />
+        <el-form-item label="打卡链接" prop="articleAttaUrl">
+          <el-input v-model="form.articleAttaUrl" placeholder="请输入打卡链接" />
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" placeholder="请输入备注" />
@@ -149,7 +149,7 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 文章表格数据
+      // 打卡表格数据
       articleList: [],
       // 弹出层标题
       title: "",
@@ -182,7 +182,7 @@ export default {
     this.getList()
   },
   methods: {
-    /** 查询文章列表 */
+    /** 查询打卡列表 */
     getList() {
       this.loading = true
       listArticle(this.queryParams).then(response => {
@@ -233,7 +233,7 @@ export default {
     handleAdd() {
       this.reset()
       this.open = true
-      this.title = "添加文章"
+      this.title = "添加打卡"
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -242,7 +242,7 @@ export default {
       getArticle(articleId).then(response => {
         this.form = response.data
         this.open = true
-        this.title = "修改文章"
+        this.title = "修改打卡"
       })
     },
     /** 提交按钮 */
@@ -268,7 +268,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const articleIds = row.articleId || this.ids
-      this.$modal.confirm('是否确认删除文章编号为"' + articleIds + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除打卡编号为"' + articleIds + '"的数据项？').then(function() {
         return delArticle(articleIds)
       }).then(() => {
         this.getList()

@@ -17,10 +17,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="用户真实名称" prop="userName">
+      <el-form-item label="真实姓名" prop="userName">
         <el-input
           v-model="queryParams.userName"
-          placeholder="请输入用户真实名称"
+          placeholder="请输入真实姓名"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -115,10 +115,10 @@
 
     <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="评论ID" align="center" prop="userId" />
+      <el-table-column label="用户编号" align="center" prop="userId" />
       <el-table-column label="学校名称" align="center" prop="schoolName" />
       <el-table-column label="微信ID" align="center" prop="openId" />
-      <el-table-column label="用户真实名称" align="center" prop="userName" />
+      <el-table-column label="真实姓名" align="center" prop="userName" />
       <el-table-column label="用户昵称" align="center" prop="nickName" />
       <el-table-column label="身份证号" align="center" prop="idCard" />
       <el-table-column label="性别" align="center" prop="sex">
@@ -151,7 +151,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -169,8 +169,8 @@
         <el-form-item label="微信ID" prop="openId">
           <el-input v-model="form.openId" placeholder="请输入微信ID" />
         </el-form-item>
-        <el-form-item label="用户真实名称" prop="userName">
-          <el-input v-model="form.userName" placeholder="请输入用户真实名称" />
+        <el-form-item label="真实姓名" prop="userName">
+          <el-input v-model="form.userName" placeholder="请输入真实姓名" />
         </el-form-item>
         <el-form-item label="用户昵称" prop="nickName">
           <el-input v-model="form.nickName" placeholder="请输入用户昵称" />
@@ -258,7 +258,7 @@ export default {
           { required: true, message: "微信ID不能为空", trigger: "blur" }
         ],
         userName: [
-          { required: true, message: "用户真实名称不能为空", trigger: "blur" }
+          { required: true, message: "真实姓名不能为空", trigger: "blur" }
         ],
         nickName: [
           { required: true, message: "用户昵称不能为空", trigger: "blur" }

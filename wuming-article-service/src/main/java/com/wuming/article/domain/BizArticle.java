@@ -6,7 +6,7 @@ import com.wuming.common.annotation.Excel;
 import com.wuming.common.core.domain.BaseEntity;
 
 /**
- * 文章对象 t_biz_article
+ * 打卡对象 t_biz_article
  * 
  * @author patern
  * @date 2025-05-27
@@ -15,23 +15,23 @@ public class BizArticle extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 文章ID */
+    /** 打卡ID */
     private Long articleId;
 
     /** 公告标题 */
     @Excel(name = "公告标题")
     private String articleTitle;
 
-    /** 公告类型（1视频 2语音 3文章） */
-    @Excel(name = "公告类型", readConverterExp = "1=视频,2=语音,3=文章")
+    /** 公告类型（1视频 2语音 3打卡） */
+    @Excel(name = "公告类型", readConverterExp = "1=视频,2=语音,3=打卡")
     private String articleType;
 
     /** 公告内容 */
     @Excel(name = "公告内容")
     private String articleContent;
 
-    /** 文章链接 */
-    @Excel(name = "文章链接")
+    /** 打卡链接 */
+    @Excel(name = "打卡链接")
     private String articleAttaUrl;
 
     /** 公告状态（0正常 1关闭 2下架） */

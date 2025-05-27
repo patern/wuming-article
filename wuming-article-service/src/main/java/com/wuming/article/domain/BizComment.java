@@ -6,7 +6,7 @@ import com.wuming.common.annotation.Excel;
 import com.wuming.common.core.domain.BaseEntity;
 
 /**
- * 文章评论对象 t_biz_comment
+ * 打卡评论对象 t_biz_comment
  * 
  * @author patern
  * @date 2025-05-27
@@ -18,8 +18,8 @@ public class BizComment extends BaseEntity
     /** 评论ID */
     private Long commentId;
 
-    /** 文章ID */
-    @Excel(name = "文章ID")
+    /** 打卡ID */
+    @Excel(name = "打卡ID")
     private Long articleId;
 
     /** 用户ID */

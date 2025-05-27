@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 查询文章列表
+// 查询打卡列表
 export function listArticle(query) {
   return request({
     url: '/article/article/list',
@@ -9,7 +9,7 @@ export function listArticle(query) {
   })
 }
 
-// 查询文章详细
+// 查询打卡详细
 export function getArticle(articleId) {
   return request({
     url: '/article/article/' + articleId,
@@ -17,7 +17,7 @@ export function getArticle(articleId) {
   })
 }
 
-// 新增文章
+// 新增打卡
 export function addArticle(data) {
   return request({
     url: '/article/article',
@@ -26,7 +26,7 @@ export function addArticle(data) {
   })
 }
 
-// 修改文章
+// 修改打卡
 export function updateArticle(data) {
   return request({
     url: '/article/article',
@@ -35,7 +35,7 @@ export function updateArticle(data) {
   })
 }
 
-// 删除文章
+// 删除打卡
 export function delArticle(articleId) {
   return request({
     url: '/article/article/' + articleId,

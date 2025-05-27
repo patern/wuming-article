@@ -15,7 +15,7 @@ public class BizUser extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 评论ID */
+    /** 用户ID */
     private Long userId;
 
     /** 学校名称 */

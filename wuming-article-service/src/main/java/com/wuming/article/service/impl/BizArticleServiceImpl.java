@@ -9,7 +9,7 @@ import com.wuming.article.domain.BizArticle;
 import com.wuming.article.service.IBizArticleService;
 
 /**
- * 文章Service业务层处理
+ * 打卡Service业务层处理
  * 
  * @author patern
  * @date 2025-05-27
@@ -21,10 +21,10 @@ public class BizArticleServiceImpl implements IBizArticleService
     private BizArticleMapper bizArticleMapper;
 
     /**
-     * 查询文章
+     * 查询打卡
      * 
-     * @param articleId 文章主键
-     * @return 文章
+     * @param articleId 打卡主键
+     * @return 打卡
      */
     @Override
     public BizArticle selectBizArticleByArticleId(Long articleId)
@@ -33,10 +33,10 @@ public class BizArticleServiceImpl implements IBizArticleService
     }
 
     /**
-     * 查询文章列表
+     * 查询打卡列表
      * 
-     * @param bizArticle 文章
-     * @return 文章
+     * @param bizArticle 打卡
+     * @return 打卡
      */
     @Override
     public List<BizArticle> selectBizArticleList(BizArticle bizArticle)
@@ -45,9 +45,9 @@ public class BizArticleServiceImpl implements IBizArticleService
     }
 
     /**
-     * 新增文章
+     * 新增打卡
      * 
-     * @param bizArticle 文章
+     * @param bizArticle 打卡
      * @return 结果
      */
     @Override
@@ -58,9 +58,9 @@ public class BizArticleServiceImpl implements IBizArticleService
     }
 
     /**
-     * 修改文章
+     * 修改打卡
      * 
-     * @param bizArticle 文章
+     * @param bizArticle 打卡
      * @return 结果
      */
     @Override
@@ -71,9 +71,9 @@ public class BizArticleServiceImpl implements IBizArticleService
     }
 
     /**
-     * 批量删除文章
+     * 批量删除打卡
      * 
-     * @param articleIds 需要删除的文章主键
+     * @param articleIds 需要删除的打卡主键
      * @return 结果
      */
     @Override
@@ -83,9 +83,9 @@ public class BizArticleServiceImpl implements IBizArticleService
     }
 
     /**
-     * 删除文章信息
+     * 删除打卡信息
      * 
-     * @param articleId 文章主键
+     * @param articleId 打卡主键
      * @return 结果
      */
     @Override

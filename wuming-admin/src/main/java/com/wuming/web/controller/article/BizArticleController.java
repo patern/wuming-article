@@ -22,7 +22,7 @@ import com.wuming.common.utils.poi.ExcelUtil;
 import com.wuming.common.core.page.TableDataInfo;
 
 /**
- * 文章Controller
+ * 打卡Controller
  * 
  * @author patern
  * @date 2025-05-27
@@ -35,7 +35,7 @@ public class BizArticleController extends BaseController
     private IBizArticleService bizArticleService;
 
     /**
-     * 查询文章列表
+     * 查询打卡列表
      */
     @PreAuthorize("@ss.hasPermi('article:article:list')")
     @GetMapping("/list")
@@ -47,20 +47,20 @@ public class BizArticleController extends BaseController
     }
 
     /**
-     * 导出文章列表
+     * 导出打卡列表
      */
     @PreAuthorize("@ss.hasPermi('article:article:export')")
-    @Log(title = "文章", businessType = BusinessType.EXPORT)
+    @Log(title = "打卡", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, BizArticle bizArticle)
     {
         List<BizArticle> list = bizArticleService.selectBizArticleList(bizArticle);
         ExcelUtil<BizArticle> util = new ExcelUtil<BizArticle>(BizArticle.class);
-        util.exportExcel(response, list, "文章数据");
+        util.exportExcel(response, list, "打卡数据");
     }
 
     /**
-     * 获取文章详细信息
+     * 获取打卡详细信息
      */
     @PreAuthorize("@ss.hasPermi('article:article:query')")
     @GetMapping(value = "/{articleId}")
@@ -70,10 +70,10 @@ public class BizArticleController extends BaseController
     }
 
     /**
-     * 新增文章
+     * 新增打卡
      */
     @PreAuthorize("@ss.hasPermi('article:article:add')")
-    @Log(title = "文章", businessType = BusinessType.INSERT)
+    @Log(title = "打卡", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody BizArticle bizArticle)
     {
@@ -81,10 +81,10 @@ public class BizArticleController extends BaseController
     }
 
     /**
-     * 修改文章
+     * 修改打卡
      */
     @PreAuthorize("@ss.hasPermi('article:article:edit')")
-    @Log(title = "文章", businessType = BusinessType.UPDATE)
+    @Log(title = "打卡", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody BizArticle bizArticle)
     {
@@ -92,10 +92,10 @@ public class BizArticleController extends BaseController
     }
 
     /**
-     * 删除文章
+     * 删除打卡
      */
     @PreAuthorize("@ss.hasPermi('article:article:remove')")
-    @Log(title = "文章", businessType = BusinessType.DELETE)
+    @Log(title = "打卡", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{articleIds}")
     public AjaxResult remove(@PathVariable Long[] articleIds)
     {

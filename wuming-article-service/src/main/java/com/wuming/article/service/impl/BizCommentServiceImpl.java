@@ -9,7 +9,7 @@ import com.wuming.article.domain.BizComment;
 import com.wuming.article.service.IBizCommentService;
 
 /**
- * 文章评论Service业务层处理
+ * 打卡评论Service业务层处理
  * 
  * @author patern
  * @date 2025-05-27
@@ -21,10 +21,10 @@ public class BizCommentServiceImpl implements IBizCommentService
     private BizCommentMapper bizCommentMapper;
 
     /**
-     * 查询文章评论
+     * 查询打卡评论
      * 
-     * @param commentId 文章评论主键
-     * @return 文章评论
+     * @param commentId 打卡评论主键
+     * @return 打卡评论
      */
     @Override
     public BizComment selectBizCommentByCommentId(Long commentId)
@@ -33,10 +33,10 @@ public class BizCommentServiceImpl implements IBizCommentService
     }
 
     /**
-     * 查询文章评论列表
+     * 查询打卡评论列表
      * 
-     * @param bizComment 文章评论
-     * @return 文章评论
+     * @param bizComment 打卡评论
+     * @return 打卡评论
      */
     @Override
     public List<BizComment> selectBizCommentList(BizComment bizComment)
@@ -45,9 +45,9 @@ public class BizCommentServiceImpl implements IBizCommentService
     }
 
     /**
-     * 新增文章评论
+     * 新增打卡评论
      * 
-     * @param bizComment 文章评论
+     * @param bizComment 打卡评论
      * @return 结果
      */
     @Override
@@ -58,9 +58,9 @@ public class BizCommentServiceImpl implements IBizCommentService
     }
 
     /**
-     * 修改文章评论
+     * 修改打卡评论
      * 
-     * @param bizComment 文章评论
+     * @param bizComment 打卡评论
      * @return 结果
      */
     @Override
@@ -71,9 +71,9 @@ public class BizCommentServiceImpl implements IBizCommentService
     }
 
     /**
-     * 批量删除文章评论
+     * 批量删除打卡评论
      * 
-     * @param commentIds 需要删除的文章评论主键
+     * @param commentIds 需要删除的打卡评论主键
      * @return 结果
      */
     @Override
@@ -83,9 +83,9 @@ public class BizCommentServiceImpl implements IBizCommentService
     }
 
     /**
-     * 删除文章评论信息
+     * 删除打卡评论信息
      * 
-     * @param commentId 文章评论主键
+     * @param commentId 打卡评论主键
      * @return 结果
      */
     @Override

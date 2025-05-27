@@ -22,7 +22,7 @@ import com.wuming.common.utils.poi.ExcelUtil;
 import com.wuming.common.core.page.TableDataInfo;
 
 /**
- * 文章评论Controller
+ * 打卡评论Controller
  * 
  * @author patern
  * @date 2025-05-27
@@ -35,7 +35,7 @@ public class BizCommentController extends BaseController
     private IBizCommentService bizCommentService;
 
     /**
-     * 查询文章评论列表
+     * 查询打卡评论列表
      */
     @PreAuthorize("@ss.hasPermi('article:comment:list')")
     @GetMapping("/list")
@@ -47,20 +47,20 @@ public class BizCommentController extends BaseController
     }
 
     /**
-     * 导出文章评论列表
+     * 导出打卡评论列表
      */
     @PreAuthorize("@ss.hasPermi('article:comment:export')")
-    @Log(title = "文章评论", businessType = BusinessType.EXPORT)
+    @Log(title = "打卡评论", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, BizComment bizComment)
     {
         List<BizComment> list = bizCommentService.selectBizCommentList(bizComment);
         ExcelUtil<BizComment> util = new ExcelUtil<BizComment>(BizComment.class);
-        util.exportExcel(response, list, "文章评论数据");
+        util.exportExcel(response, list, "打卡评论数据");
     }
 
     /**
-     * 获取文章评论详细信息
+     * 获取打卡评论详细信息
      */
     @PreAuthorize("@ss.hasPermi('article:comment:query')")
     @GetMapping(value = "/{commentId}")
@@ -70,10 +70,10 @@ public class BizCommentController extends BaseController
     }
 
     /**
-     * 新增文章评论
+     * 新增打卡评论
      */
     @PreAuthorize("@ss.hasPermi('article:comment:add')")
-    @Log(title = "文章评论", businessType = BusinessType.INSERT)
+    @Log(title = "打卡评论", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody BizComment bizComment)
     {
@@ -81,10 +81,10 @@ public class BizCommentController extends BaseController
     }
 
     /**
-     * 修改文章评论
+     * 修改打卡评论
      */
     @PreAuthorize("@ss.hasPermi('article:comment:edit')")
-    @Log(title = "文章评论", businessType = BusinessType.UPDATE)
+    @Log(title = "打卡评论", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody BizComment bizComment)
     {
@@ -92,10 +92,10 @@ public class BizCommentController extends BaseController
     }
 
     /**
-     * 删除文章评论
+     * 删除打卡评论
      */
     @PreAuthorize("@ss.hasPermi('article:comment:remove')")
-    @Log(title = "文章评论", businessType = BusinessType.DELETE)
+    @Log(title = "打卡评论", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{commentIds}")
     public AjaxResult remove(@PathVariable Long[] commentIds)
     {
