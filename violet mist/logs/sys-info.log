@@ -62,3 +62,10 @@
 20:23:20.203 [restartedMain] INFO  o.a.c.h.Http11NioProtocol - [log,168] - Starting ProtocolHandler ["http-nio-8080"]
 20:23:20.775 [restartedMain] INFO  o.q.c.QuartzScheduler - [start,547] - Scheduler quartzScheduler_$_NON_CLUSTERED started.
 20:23:20.802 [restartedMain] INFO  c.w.WumingApplication - [logStarted,61] - Started WumingApplication in 18.561 seconds (JVM running for 19.571)
+20:26:59.717 [Thread-5] INFO  o.q.c.QuartzScheduler - [standby,585] - Scheduler quartzScheduler_$_NON_CLUSTERED paused.
+20:26:59.794 [Thread-5] INFO  o.q.c.QuartzScheduler - [shutdown,666] - Scheduler quartzScheduler_$_NON_CLUSTERED shutting down.
+20:26:59.796 [Thread-5] INFO  o.q.c.QuartzScheduler - [standby,585] - Scheduler quartzScheduler_$_NON_CLUSTERED paused.
+20:26:59.797 [Thread-5] INFO  o.q.c.QuartzScheduler - [shutdown,740] - Scheduler quartzScheduler_$_NON_CLUSTERED shutdown complete.
+20:26:59.797 [Thread-5] INFO  sys-user - [shutdownAsyncManager,31] - ====关闭后台任务任务线程池====
+20:26:59.809 [Thread-5] INFO  c.a.d.p.DruidDataSource - [close,2204] - {dataSource-1} closing ...
+20:26:59.853 [Thread-5] INFO  c.a.d.p.DruidDataSource - [close,2277] - {dataSource-1} closed
