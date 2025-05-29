@@ -6,6 +6,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <resultMap type="BizArticle" id="BizArticleResult">
         <result property="articleId"    column="article_id"    />
+        <result property="userId"    column="user_id"    />
         <result property="articleTitle"    column="article_title"    />
         <result property="articleType"    column="article_type"    />
         <result property="articleContent"    column="article_content"    />
@@ -19,13 +20,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectBizArticleVo">
-        select article_id, article_title, article_type, article_content, article_atta_url, status, create_by, create_time, update_by, update_time, remark from t_biz_article
+        select article_id,user_id, article_title, article_type, article_content, article_atta_url, status, create_by, create_time, update_by, update_time, remark from t_biz_article
     </sql>
 
     <select id="selectBizArticleList" parameterType="BizArticle" resultMap="BizArticleResult">
         <include refid="selectBizArticleVo"/>
         <where>  
-            <if test="articleTitle != null  and articleTitle != ''"> and article_title = #{articleTitle}</if>
+            <if test="articleTitle != null  and articleTitle != ''"> and article_title like concat('%', #{articleTitle}, '%')</if>
+            <if test="userId != null"> and user_id = #{userId}</if>
             <if test="articleType != null  and articleType != ''"> and article_type = #{articleType}</if>
             <if test="articleContent != null  and articleContent != ''"> and article_content = #{articleContent}</if>
             <if test="articleAttaUrl != null  and articleAttaUrl != ''"> and article_atta_url = #{articleAttaUrl}</if>
@@ -41,6 +43,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <insert id="insertBizArticle" parameterType="BizArticle" useGeneratedKeys="true" keyProperty="articleId">
         insert into t_biz_article
         <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
             <if test="articleTitle != null and articleTitle != ''">article_title,</if>
             <if test="articleType != null and articleType != ''">article_type,</if>
             <if test="articleContent != null">article_content,</if>
@@ -53,6 +56,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="remark != null">remark,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
             <if test="articleTitle != null and articleTitle != ''">#{articleTitle},</if>
             <if test="articleType != null and articleType != ''">#{articleType},</if>
             <if test="articleContent != null">#{articleContent},</if>

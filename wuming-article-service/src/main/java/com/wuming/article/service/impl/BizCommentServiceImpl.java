@@ -1,6 +1,8 @@
 package com.wuming.article.service.impl;
 
 import java.util.List;
+
+import com.wuming.article.dto.BizCommentQuery;
 import com.wuming.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,6 +42,17 @@ public class BizCommentServiceImpl implements IBizCommentService
      */
     @Override
     public List<BizComment> selectBizCommentList(BizComment bizComment)
+    {
+        return bizCommentMapper.selectBizCommentList(bizComment);
+    }
+    /**
+     * 查询打卡评论列表
+     *
+     * @param bizComment 打卡评论
+     * @return 打卡评论
+     */
+    @Override
+    public List<BizComment> selectBizComment(BizCommentQuery bizComment)
     {
         return bizCommentMapper.selectBizCommentList(bizComment);
     }

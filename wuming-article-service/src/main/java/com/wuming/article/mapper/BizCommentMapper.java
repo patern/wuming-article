@@ -2,6 +2,7 @@ package com.wuming.article.mapper;
 
 import java.util.List;
 import com.wuming.article.domain.BizComment;
+import com.wuming.article.dto.BizCommentQuery;
 
 /**
  * 打卡评论Mapper接口
@@ -21,12 +22,19 @@ public interface BizCommentMapper
 
     /**
      * 查询打卡评论列表
-     * 
+     *
      * @param bizComment 打卡评论
      * @return 打卡评论集合
      */
     public List<BizComment> selectBizCommentList(BizComment bizComment);
 
+    /**
+     * 查询打卡评论列表
+     *
+     * @param bizComment 打卡评论
+     * @return 打卡评论集合
+     */
+    public List<BizComment> selectBizComment(BizCommentQuery bizComment);
     /**
      * 新增打卡评论
      * 

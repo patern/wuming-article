@@ -6,16 +6,16 @@ import com.wuming.common.annotation.Excel;
 import com.wuming.common.core.domain.BaseEntity;
 
 /**
- * 用户对象 t_biz_user
+ * 打卡用户对象 t_biz_user
  * 
- * @author patern
- * @date 2025-05-27
+ * @author wuming
+ * @date 2025-05-28
  */
 public class BizUser extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 用户ID */
+    /** 用户编码 */
     private Long userId;
 
     /** 学校名称 */
@@ -26,13 +26,17 @@ public class BizUser extends BaseEntity
     @Excel(name = "微信ID")
     private String openId;
 
-    /** 用户真实名称 */
-    @Excel(name = "用户真实名称")
+    /** 真实姓名 */
+    @Excel(name = "真实姓名")
     private String userName;
 
     /** 用户昵称 */
     @Excel(name = "用户昵称")
     private String nickName;
+
+    /** 联系方式 */
+    @Excel(name = "联系方式")
+    private String telephone;
 
     /** 身份证号 */
     @Excel(name = "身份证号")
@@ -96,6 +100,16 @@ public class BizUser extends BaseEntity
         return nickName;
     }
 
+    public void setTelephone(String telephone) 
+    {
+        this.telephone = telephone;
+    }
+
+    public String getTelephone() 
+    {
+        return telephone;
+    }
+
     public void setIdCard(String idCard) 
     {
         this.idCard = idCard;
@@ -134,6 +148,7 @@ public class BizUser extends BaseEntity
             .append("openId", getOpenId())
             .append("userName", getUserName())
             .append("nickName", getNickName())
+            .append("telephone", getTelephone())
             .append("idCard", getIdCard())
             .append("sex", getSex())
             .append("status", getStatus())

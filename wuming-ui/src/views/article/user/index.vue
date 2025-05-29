@@ -33,10 +33,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="身份证号" prop="idCard">
+      <el-form-item label="联系方式" prop="telephone">
         <el-input
-          v-model="queryParams.idCard"
-          placeholder="请输入身份证号"
+          v-model="queryParams.telephone"
+          placeholder="请输入联系方式"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -54,7 +54,7 @@
       <el-form-item label="评论状态" prop="status">
         <el-select v-model="queryParams.status" placeholder="请选择评论状态" clearable>
           <el-option
-            v-for="dict in dict.type.sys_common_status"
+            v-for="dict in dict.type.sys_yes_no"
             :key="dict.value"
             :label="dict.label"
             :value="dict.value"
@@ -115,11 +115,12 @@
 
     <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="用户编号" align="center" prop="userId" />
+      <el-table-column label="用户编码" align="center" prop="userId" />
       <el-table-column label="学校名称" align="center" prop="schoolName" />
       <el-table-column label="微信ID" align="center" prop="openId" />
       <el-table-column label="真实姓名" align="center" prop="userName" />
       <el-table-column label="用户昵称" align="center" prop="nickName" />
+      <el-table-column label="联系方式" align="center" prop="telephone" />
       <el-table-column label="身份证号" align="center" prop="idCard" />
       <el-table-column label="性别" align="center" prop="sex">
         <template slot-scope="scope">
@@ -128,7 +129,7 @@
       </el-table-column>
       <el-table-column label="评论状态" align="center" prop="status">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_common_status" :value="scope.row.status"/>
+          <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.status"/>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" />
@@ -151,7 +152,7 @@
         </template>
       </el-table-column>
     </el-table>
-
+    
     <pagination
       v-show="total>0"
       :total="total"
@@ -160,7 +161,7 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改用户对话框 -->
+    <!-- 添加或修改打卡用户对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="学校名称" prop="schoolName">
@@ -174,6 +175,9 @@
         </el-form-item>
         <el-form-item label="用户昵称" prop="nickName">
           <el-input v-model="form.nickName" placeholder="请输入用户昵称" />
+        </el-form-item>
+        <el-form-item label="联系方式" prop="telephone">
+          <el-input v-model="form.telephone" placeholder="请输入联系方式" />
         </el-form-item>
         <el-form-item label="身份证号" prop="idCard">
           <el-input v-model="form.idCard" placeholder="请输入身份证号" />
@@ -191,7 +195,7 @@
         <el-form-item label="评论状态" prop="status">
           <el-radio-group v-model="form.status">
             <el-radio
-              v-for="dict in dict.type.sys_common_status"
+              v-for="dict in dict.type.sys_yes_no"
               :key="dict.value"
               :label="dict.value"
             >{{dict.label}}</el-radio>
@@ -214,7 +218,7 @@ import { listUser, getUser, delUser, addUser, updateUser } from "@/api/article/u
 
 export default {
   name: "User",
-  dicts: ['sys_common_status', 'sys_user_sex'],
+  dicts: ['sys_yes_no', 'sys_user_sex'],
   data() {
     return {
       // 遮罩层
@@ -229,7 +233,7 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 用户表格数据
+      // 打卡用户表格数据
       userList: [],
       // 弹出层标题
       title: "",
@@ -243,7 +247,7 @@ export default {
         openId: null,
         userName: null,
         nickName: null,
-        idCard: null,
+        telephone: null,
         sex: null,
         status: null,
       },
@@ -263,6 +267,9 @@ export default {
         nickName: [
           { required: true, message: "用户昵称不能为空", trigger: "blur" }
         ],
+        telephone: [
+          { required: true, message: "联系方式不能为空", trigger: "blur" }
+        ],
         idCard: [
           { required: true, message: "身份证号不能为空", trigger: "blur" }
         ],
@@ -276,7 +283,7 @@ export default {
     this.getList()
   },
   methods: {
-    /** 查询用户列表 */
+    /** 查询打卡用户列表 */
     getList() {
       this.loading = true
       listUser(this.queryParams).then(response => {
@@ -298,6 +305,7 @@ export default {
         openId: null,
         userName: null,
         nickName: null,
+        telephone: null,
         idCard: null,
         sex: null,
         status: null,
@@ -329,7 +337,7 @@ export default {
     handleAdd() {
       this.reset()
       this.open = true
-      this.title = "添加用户"
+      this.title = "添加打卡用户"
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -338,7 +346,7 @@ export default {
       getUser(userId).then(response => {
         this.form = response.data
         this.open = true
-        this.title = "修改用户"
+        this.title = "修改打卡用户"
       })
     },
     /** 提交按钮 */
@@ -364,7 +372,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const userIds = row.userId || this.ids
-      this.$modal.confirm('是否确认删除用户编号为"' + userIds + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除打卡用户编号为"' + userIds + '"的数据项？').then(function() {
         return delUser(userIds)
       }).then(() => {
         this.getList()

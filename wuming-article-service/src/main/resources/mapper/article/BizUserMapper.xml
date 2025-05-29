@@ -10,6 +10,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="openId"    column="open_id"    />
         <result property="userName"    column="user_name"    />
         <result property="nickName"    column="nick_name"    />
+        <result property="telephone"    column="telephone"    />
         <result property="idCard"    column="id_card"    />
         <result property="sex"    column="sex"    />
         <result property="status"    column="status"    />
@@ -21,17 +22,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectBizUserVo">
-        select user_id, school_name, open_id, user_name, nick_name, id_card, sex, status, create_by, create_time, update_by, update_time, remark from t_biz_user
+        select user_id, school_name, open_id, user_name, nick_name, telephone, id_card, sex, status, create_by, create_time, update_by, update_time, remark from t_biz_user
     </sql>
 
     <select id="selectBizUserList" parameterType="BizUser" resultMap="BizUserResult">
         <include refid="selectBizUserVo"/>
         <where>  
             <if test="schoolName != null  and schoolName != ''"> and school_name like concat('%', #{schoolName}, '%')</if>
-            <if test="openId != null  and openId != ''"> and open_id = #{openId}</if>
+            <if test="openId != null  and openId != ''"> and open_id like concat('%', #{openId}, '%')</if>
             <if test="userName != null  and userName != ''"> and user_name like concat('%', #{userName}, '%')</if>
             <if test="nickName != null  and nickName != ''"> and nick_name like concat('%', #{nickName}, '%')</if>
-            <if test="idCard != null  and idCard != ''"> and id_card = #{idCard}</if>
+            <if test="telephone != null  and telephone != ''"> and telephone = #{telephone}</if>
             <if test="sex != null  and sex != ''"> and sex = #{sex}</if>
             <if test="status != null  and status != ''"> and status = #{status}</if>
         </where>
@@ -49,6 +50,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="openId != null and openId != ''">open_id,</if>
             <if test="userName != null and userName != ''">user_name,</if>
             <if test="nickName != null and nickName != ''">nick_name,</if>
+            <if test="telephone != null and telephone != ''">telephone,</if>
             <if test="idCard != null and idCard != ''">id_card,</if>
             <if test="sex != null and sex != ''">sex,</if>
             <if test="status != null">status,</if>
@@ -63,6 +65,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="openId != null and openId != ''">#{openId},</if>
             <if test="userName != null and userName != ''">#{userName},</if>
             <if test="nickName != null and nickName != ''">#{nickName},</if>
+            <if test="telephone != null and telephone != ''">#{telephone},</if>
             <if test="idCard != null and idCard != ''">#{idCard},</if>
             <if test="sex != null and sex != ''">#{sex},</if>
             <if test="status != null">#{status},</if>
@@ -81,6 +84,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="openId != null and openId != ''">open_id = #{openId},</if>
             <if test="userName != null and userName != ''">user_name = #{userName},</if>
             <if test="nickName != null and nickName != ''">nick_name = #{nickName},</if>
+            <if test="telephone != null and telephone != ''">telephone = #{telephone},</if>
             <if test="idCard != null and idCard != ''">id_card = #{idCard},</if>
             <if test="sex != null and sex != ''">sex = #{sex},</if>
             <if test="status != null">status = #{status},</if>

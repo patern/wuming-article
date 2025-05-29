@@ -18,6 +18,9 @@ public class BizArticle extends BaseEntity
     /** 打卡ID */
     private Long articleId;
 
+    /** 用户ID */
+    private Long userId;
+
     /** 公告标题 */
     @Excel(name = "公告标题")
     private String articleTitle;
@@ -48,7 +51,15 @@ public class BizArticle extends BaseEntity
         return articleId;
     }
 
-    public void setArticleTitle(String articleTitle) 
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public void setArticleTitle(String articleTitle)
     {
         this.articleTitle = articleTitle;
     }
@@ -102,6 +113,7 @@ public class BizArticle extends BaseEntity
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("articleId", getArticleId())
+            .append("userId", getUserId())
             .append("articleTitle", getArticleTitle())
             .append("articleType", getArticleType())
             .append("articleContent", getArticleContent())

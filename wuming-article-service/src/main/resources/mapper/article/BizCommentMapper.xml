@@ -24,7 +24,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectBizCommentList" parameterType="BizComment" resultMap="BizCommentResult">
         <include refid="selectBizCommentVo"/>
-        <where>  
+        <where>
             <if test="articleId != null "> and article_id = #{articleId}</if>
             <if test="userId != null "> and user_id = #{userId}</if>
             <if test="commentContent != null  and commentContent != ''"> and comment_content = #{commentContent}</if>
@@ -32,7 +32,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="status != null  and status != ''"> and status = #{status}</if>
         </where>
     </select>
-    
+
+    <select id="selectBizComment" parameterType="BizComment" resultMap="BizCommentResult">
+        <include refid="selectBizCommentVo"/>
+        <where>
+            <if test="articleIds != null  and articleIds.size>0"> and article_id in
+                <foreach collection="articleIds" close=")" item="item" open="(" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="commentContent != null  and commentContent != ''"> and comment_content = #{commentContent}</if>
+            <if test="commentType != null  and commentType != ''"> and comment_type = #{commentType}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+
     <select id="selectBizCommentByCommentId" parameterType="Long" resultMap="BizCommentResult">
         <include refid="selectBizCommentVo"/>
         where comment_id = #{commentId}

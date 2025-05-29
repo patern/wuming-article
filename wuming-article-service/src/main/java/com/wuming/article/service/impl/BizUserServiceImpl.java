@@ -9,10 +9,10 @@ import com.wuming.article.domain.BizUser;
 import com.wuming.article.service.IBizUserService;
 
 /**
- * 用户Service业务层处理
+ * 打卡用户Service业务层处理
  * 
- * @author patern
- * @date 2025-05-27
+ * @author wuming
+ * @date 2025-05-28
  */
 @Service
 public class BizUserServiceImpl implements IBizUserService 
@@ -21,10 +21,10 @@ public class BizUserServiceImpl implements IBizUserService
     private BizUserMapper bizUserMapper;
 
     /**
-     * 查询用户
+     * 查询打卡用户
      * 
-     * @param userId 用户主键
-     * @return 用户
+     * @param userId 打卡用户主键
+     * @return 打卡用户
      */
     @Override
     public BizUser selectBizUserByUserId(Long userId)
@@ -33,10 +33,10 @@ public class BizUserServiceImpl implements IBizUserService
     }
 
     /**
-     * 查询用户列表
+     * 查询打卡用户列表
      * 
-     * @param bizUser 用户
-     * @return 用户
+     * @param bizUser 打卡用户
+     * @return 打卡用户
      */
     @Override
     public List<BizUser> selectBizUserList(BizUser bizUser)
@@ -45,9 +45,9 @@ public class BizUserServiceImpl implements IBizUserService
     }
 
     /**
-     * 新增用户
+     * 新增打卡用户
      * 
-     * @param bizUser 用户
+     * @param bizUser 打卡用户
      * @return 结果
      */
     @Override
@@ -58,9 +58,9 @@ public class BizUserServiceImpl implements IBizUserService
     }
 
     /**
-     * 修改用户
+     * 修改打卡用户
      * 
-     * @param bizUser 用户
+     * @param bizUser 打卡用户
      * @return 结果
      */
     @Override
@@ -71,9 +71,9 @@ public class BizUserServiceImpl implements IBizUserService
     }
 
     /**
-     * 批量删除用户
+     * 批量删除打卡用户
      * 
-     * @param userIds 需要删除的用户主键
+     * @param userIds 需要删除的打卡用户主键
      * @return 结果
      */
     @Override
@@ -83,9 +83,9 @@ public class BizUserServiceImpl implements IBizUserService
     }
 
     /**
-     * 删除用户信息
+     * 删除打卡用户信息
      * 
-     * @param userId 用户主键
+     * @param userId 打卡用户主键
      * @return 结果
      */
     @Override
