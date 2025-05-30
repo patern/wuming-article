@@ -1,5 +1,6 @@
 package com.wuming.common.oss.factory;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.wuming.common.core.redis.RedisCache;
 import com.wuming.common.oss.constant.OssConstant;
 import com.wuming.common.oss.core.OssClient;
@@ -26,7 +27,6 @@ public class OssFactory {
     private final ReentrantLock LOCK = new ReentrantLock();
     @Autowired
     private RedisCache redisCache;
-    @Autowired
     private OssProperties properties;
     /**
      * 获取默认实例
@@ -44,6 +44,11 @@ public class OssFactory {
      * 根据类型获取实例
      */
     public OssClient instance(String configKey) {
+        String ossConfig = redisCache.getCacheObject(OssConstant.OSS_CONFIG);
+        if (StringUtils.isEmpty(configKey)) {
+            throw new OssException("文件存储服务类型无法找到!");
+        }
+        properties = JSONObject.parseObject(ossConfig,OssProperties.class);
         // 使用租户标识避免多个租户相同key实例覆盖
         String key = configKey;
         if (StringUtils.isNotBlank(properties.getTenantId())) {

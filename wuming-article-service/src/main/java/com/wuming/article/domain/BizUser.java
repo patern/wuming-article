@@ -50,6 +50,10 @@ public class BizUser extends BaseEntity
     @Excel(name = "评论状态", readConverterExp = "0=正常,1=关闭")
     private String status;
 
+    /**
+     * token信息
+     */
+    private String token;
     public void setUserId(Long userId) 
     {
         this.userId = userId;
@@ -138,6 +142,14 @@ public class BizUser extends BaseEntity
     public String getStatus() 
     {
         return status;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     @Override

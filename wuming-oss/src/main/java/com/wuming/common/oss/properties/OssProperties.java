@@ -1,16 +1,12 @@
 package com.wuming.common.oss.properties;
 
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 /**
  * OSS对象存储 配置属性
  *
  * @author Lion Li
  */
-@Component
-@ConfigurationProperties(prefix = "file-storage.s3")
+//@Component
+//@ConfigurationProperties(prefix = "file-storage.s3")
 public class OssProperties {
 
     /**

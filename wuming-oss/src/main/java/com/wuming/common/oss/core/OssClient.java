@@ -2,6 +2,10 @@ package com.wuming.common.oss.core;
 
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.IdUtil;
+import com.aliyun.oss.HttpMethod;
+import com.aliyun.oss.OSS;
+import com.aliyun.oss.OSSClientBuilder;
+import com.aliyun.oss.model.GeneratePresignedUrlRequest;
 import com.wuming.common.constant.Constants;
 import com.wuming.common.oss.constant.OssConstant;
 import com.wuming.common.oss.entity.UploadResult;
@@ -31,7 +35,10 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.function.Consumer;
 
 /**
@@ -56,6 +63,11 @@ public class OssClient {
      * Amazon S3 异步客户端
      */
     private final S3AsyncClient client;
+
+    /**
+     * Amazon S3 异步客户端
+     */
+    private OSS oss;
 
     /**
      * 用于管理 S3 数据传输的高级工具
@@ -110,7 +122,7 @@ public class OssClient {
                     .endpointOverride(URI.create(getDomain()))
                     .serviceConfiguration(config)
                     .build();
-
+            oss = new OSSClientBuilder().build(properties.getEndpoint(), properties.getAccessKey(), properties.getSecretKey());
         } catch (Exception e) {
             if (e instanceof OssException) {
                 throw e;
@@ -150,11 +162,11 @@ public class OssClient {
             String eTag = uploadResult.response().eTag();
 
             // 提取上传结果中的 ETag，并构建一个自定义的 UploadResult 对象
-            UploadResult uploadResult1 = new UploadResult();
-            uploadResult1.setUrl(getUrl() + "/" + key);
-            uploadResult1.setFilename(key);
-            uploadResult1.seteTag(eTag);
-            return uploadResult1;
+//            UploadResult uploadResult1 = new UploadResult();
+//            uploadResult1.setUrl(getUrl() + "/" + key);
+//            uploadResult1.setFilename(key);
+//            uploadResult1.seteTag(eTag);
+            return getResult(key,eTag);
         } catch (Exception e) {
             // 捕获异常并抛出自定义异常
             throw new OssException("上传文件失败，请检查配置信息:[" + e.getMessage() + "]");
@@ -206,15 +218,29 @@ public class OssClient {
             CompletedUpload uploadResult = upload.completionFuture().join();
             String eTag = uploadResult.response().eTag();
 
-            UploadResult uploadResult1 = new UploadResult();
-            uploadResult1.setUrl(getUrl() + SLASH + key);
-            uploadResult1.setFilename(key);
-            uploadResult1.seteTag(eTag);
+//            UploadResult uploadResult1 = new UploadResult();
+//            uploadResult1.setUrl(getUrl() + SLASH + key);
+//            uploadResult1.setFilename(key);
+//            uploadResult1.seteTag(eTag);
             // 提取上传结果中的 ETag，并构建一个自定义的 UploadResult 对象
-            return uploadResult1;
+            return getResult(key,eTag);
         } catch (Exception e) {
             throw new OssException("上传文件失败，请检查配置信息:[" + e.getMessage() + "]");
         }
+    }
+    private UploadResult getResult(String objectKey,String eTag){
+        GeneratePresignedUrlRequest req = new GeneratePresignedUrlRequest(properties.getBucketName(), objectKey);
+        req.setMethod(HttpMethod.GET); // 设置HTTP请求方法为GET，你也可以设置为PUT或其他HTTP方法，取决于你的需求。
+        Calendar ca = Calendar.getInstance();
+        ca.add(Calendar.DATE,30);
+        req.setExpiration(ca.getTime()); // 设置URL过期时间。
+        URL url = oss.generatePresignedUrl(req); // 生成URL。
+
+        UploadResult uploadResult1 = new UploadResult();
+        uploadResult1.setUrl(url.toString());
+        uploadResult1.setFilename(objectKey);
+        uploadResult1.seteTag(eTag);
+        return uploadResult1;
     }
 
     /**

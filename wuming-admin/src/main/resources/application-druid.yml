@@ -59,13 +59,3 @@ spring:
         wall:
           config:
             multi-statement-allow: true
-file-storage:
-  s3:
-    tenantId: wuming
-    endpoint: oss-cn-chengdu.aliyuncs.com
-    domain: /
-    prefix: article
-    bucketName: article-prod
-    region: oss-cn-chengdu
-    isHttps: Y
-    accessPolicy: 0

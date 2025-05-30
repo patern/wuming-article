@@ -50,7 +50,11 @@
             <artifactId>netty-nio-client</artifactId>
         </dependency>
 
-
+        <dependency>
+            <groupId>com.aliyun.oss</groupId>
+            <artifactId>aliyun-sdk-oss</artifactId>
+            <version>3.17.4</version>
+        </dependency>
         <!-- 基于 AWS CRT 的 S3 客户端的性能增强的 S3 传输管理器 -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>

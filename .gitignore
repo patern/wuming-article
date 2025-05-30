@@ -5,3 +5,5 @@
 /wuming-ui/node_modules/
 .idea/
 wuming_log/
+/.idea/
+/wuming-oss/target/

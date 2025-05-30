@@ -5,6 +5,7 @@ import com.wuming.article.domain.BizComment;
 import com.wuming.article.dto.BizCommentQuery;
 import com.wuming.article.service.IBizArticleService;
 import com.wuming.article.service.IBizCommentService;
+import com.wuming.common.annotation.Anonymous;
 import com.wuming.common.annotation.Log;
 import com.wuming.common.core.controller.BaseController;
 import com.wuming.common.core.domain.AjaxResult;
@@ -149,6 +150,7 @@ public class WxBizArticleController extends BaseController {
      * 上次打卡附件
      */
     @Log(title = "打卡附件", businessType = BusinessType.INSERT)
+    @Anonymous
     @PostMapping("/uploadFile")
     public AjaxResult add(@RequestParam("file") MultipartFile multipartFile) {
         OssClient ossClient = ossFactory.instance();

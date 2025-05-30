@@ -12,6 +12,7 @@
         <module name="wuming-framework" />
         <module name="wuming-admin" />
         <module name="wuming-generator" />
+        <module name="wuming-oss" />
         <module name="wuming-article-service" />
       </profile>
     </annotationProcessing>
