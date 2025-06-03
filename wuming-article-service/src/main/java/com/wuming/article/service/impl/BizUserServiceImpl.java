@@ -1,6 +1,9 @@
 package com.wuming.article.service.impl;
 
 import java.util.List;
+
+import com.wuming.article.dto.BizCommentQuery;
+import com.wuming.article.dto.BizUserQuery;
 import com.wuming.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,7 +46,17 @@ public class BizUserServiceImpl implements IBizUserService
     {
         return bizUserMapper.selectBizUserList(bizUser);
     }
-
+    /**
+     * 查询打卡用户列表
+     *
+     * @param bizUser 打卡用户
+     * @return 打卡用户
+     */
+    @Override
+    public List<BizUser> selectBizUser(BizUserQuery bizUser)
+    {
+        return bizUserMapper.selectBizUser(bizUser);
+    }
     /**
      * 新增打卡用户
      * 

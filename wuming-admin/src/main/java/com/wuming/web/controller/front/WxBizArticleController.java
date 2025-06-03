@@ -2,18 +2,24 @@ package com.wuming.web.controller.front;
 
 import com.wuming.article.domain.BizArticle;
 import com.wuming.article.domain.BizComment;
+import com.wuming.article.domain.BizUser;
+import com.wuming.article.dto.BizCommentCountDto;
 import com.wuming.article.dto.BizCommentQuery;
+import com.wuming.article.dto.BizUserQuery;
 import com.wuming.article.service.IBizArticleService;
 import com.wuming.article.service.IBizCommentService;
+import com.wuming.article.service.IBizUserService;
 import com.wuming.common.annotation.Anonymous;
 import com.wuming.common.annotation.Log;
 import com.wuming.common.core.controller.BaseController;
 import com.wuming.common.core.domain.AjaxResult;
+import com.wuming.common.core.domain.model.LoginUser;
 import com.wuming.common.core.page.TableDataInfo;
 import com.wuming.common.enums.BusinessType;
 import com.wuming.common.oss.core.OssClient;
 import com.wuming.common.oss.entity.UploadResult;
 import com.wuming.common.oss.factory.OssFactory;
+import com.wuming.common.utils.SecurityUtils;
 import com.wuming.common.utils.poi.ExcelUtil;
 import com.wuming.web.controller.front.vo.BizArticleVo;
 import org.apache.commons.collections4.CollectionUtils;
@@ -45,6 +51,8 @@ public class WxBizArticleController extends BaseController {
     @Autowired
     private IBizCommentService bizCommentService;
     @Autowired
+    private IBizUserService bizUserService;
+    @Autowired
     private OssFactory ossFactory;
 
 
@@ -56,6 +64,7 @@ public class WxBizArticleController extends BaseController {
      * 并且显示评论总条数（只显示前5条，更多的需要点击详情查看，进入详情就需要登陆），点赞数量
      */
     @GetMapping("/list")
+    @Anonymous
     public TableDataInfo list(BizArticle bizArticle) {
         startPage();
         List<BizArticle> list = bizArticleService.selectBizArticleList(bizArticle);
@@ -66,24 +75,40 @@ public class WxBizArticleController extends BaseController {
         BizCommentQuery query = new BizCommentQuery();
         query.setArticleIds(ids);
         query.setStatus("0");
-        List<BizComment> comments = bizCommentService.selectBizComment(query);
+        List<BizCommentCountDto> comments = bizCommentService.selectBizCommentCount(query);
 
-        if (CollectionUtils.isEmpty(comments)) {
-            return getDataTable(list);
-        }
+        List<Long> userIds = list.stream().map(BizArticle::getUserId).collect(Collectors.toList());
+        BizUserQuery query1 = new BizUserQuery();
+        query1.setUserIds(userIds);
+        query1.setStatus("0");
+        List<BizUser> users = bizUserService.selectBizUser(query1);
+        Map<Long, BizUser> userMap = users.stream().collect(Collectors.toMap(BizUser::getUserId, v -> v));
 
         List<BizArticleVo> subComments = Lists.newArrayList();
 
-        Map<Long, List<BizComment>> commentMap = comments.stream().collect(Collectors.groupingBy(BizComment::getArticleId));
+        Map<Long, List<BizCommentCountDto>> commentMap = comments.stream().collect(Collectors.groupingBy(BizCommentCountDto::getArticleId));
+
         for (BizArticle article : list) {
             BizArticleVo vo = new BizArticleVo();
             BeanUtils.copyProperties(article, vo);
-            List<BizComment> comments1 = commentMap.get(article.getArticleId());
+            BizUser u = userMap.get(article.getUserId());
+            if (null != u) {
+                vo.setUserName(u.getNickName());
+                vo.setSchoolName(u.getSchoolName());
+            }
+            List<BizCommentCountDto> comments1 = commentMap.get(article.getArticleId());
             if (CollectionUtils.isNotEmpty(comments1)) {
-                vo.setUpVotes(comments1.stream().filter(e -> e.getCommentType().equals("1")).collect(Collectors.toList()));
-                vo.setComments(comments1.stream().filter(e -> e.getCommentType().equals("2")).collect(Collectors.toList()));
-                vo.setUpvoteCount(Long.valueOf(vo.getUpVotes().size()));
-                vo.setCommentCounts(Long.valueOf(vo.getComments().size()));
+                List<BizCommentCountDto> comments11 = comments1.stream().filter(e -> e.getCommentType().equals("1")).collect(Collectors.toList());
+                if (CollectionUtils.isNotEmpty(comments11)) {
+                    vo.setUpvoteCount(comments11.get(0).getCount());
+                }
+                List<BizCommentCountDto> comments12 = comments1.stream().filter(e -> e.getCommentType().equals("2")).collect(Collectors.toList());
+                if (CollectionUtils.isNotEmpty(comments12)) {
+                    vo.setCommentCounts(comments12.get(0).getCount());
+                }
+            } else {
+                vo.setUpvoteCount(0l);
+                vo.setCommentCounts(0l);
             }
             subComments.add(vo);
         }
@@ -112,11 +137,27 @@ public class WxBizArticleController extends BaseController {
         if (CollectionUtils.isEmpty(comments)) {
             return success(vo);
         }
+        List<Long> userIds = Lists.newArrayList();
+        userIds.add(article.getUserId());
+        BizUserQuery query1 = new BizUserQuery();
+        query1.setUserIds(userIds);
+        query1.setStatus("0");
+        List<BizUser> users = bizUserService.selectBizUser(query1);
+        Map<Long, BizUser> userMap = users.stream().collect(Collectors.toMap(BizUser::getUserId, v -> v));
+
         if (CollectionUtils.isNotEmpty(comments)) {
             vo.setUpVotes(comments.stream().filter(e -> e.getCommentType().equals("1")).collect(Collectors.toList()));
             vo.setComments(comments.stream().filter(e -> e.getCommentType().equals("2")).collect(Collectors.toList()));
             vo.setUpvoteCount(Long.valueOf(vo.getUpVotes().size()));
             vo.setCommentCounts(Long.valueOf(vo.getComments().size()));
+            //是否有点赞当前打卡
+            vo.setUpvote(comments.stream().filter(e -> e.getCommentType().equals("1")
+                    && e.getUserId().equals(SecurityUtils.getUserId())).collect(Collectors.toList()).size()>0);
+            BizUser u = userMap.get(article.getUserId());
+            if (null != u) {
+                vo.setUserName(u.getNickName());
+                vo.setSchoolName(u.getSchoolName());
+            }
         }
         return success(vo);
     }
@@ -127,11 +168,24 @@ public class WxBizArticleController extends BaseController {
      * 如果是删除评论或者点赞，则需要传递评论的id commentId，删除自己删除自己的评论，或者取消自己的点赞
      */
     @PostMapping(value = "/comment")
+    @Log(title = "评论/点赞", businessType = BusinessType.INSERT)
     public AjaxResult getInfo(@RequestBody BizComment comment) {
         //如果是正常，则新增
-        if (comment.getCommentType().equals("0")) {
-            return toAjax(bizCommentService.insertBizComment(comment));
+        comment.setStatus("0");
+        return toAjax(bizCommentService.insertBizComment(comment));
+    }
+
+    /**
+     * 取消点赞或者评论
+     */
+    @DeleteMapping(value = "/comment")
+    @Log(title = "评论/点赞", businessType = BusinessType.DELETE)
+    public AjaxResult cancelUpVote(@RequestBody BizComment comment) {
+        if (null == comment.getCommentId()) {
+            LoginUser loginUser = SecurityUtils.getLoginUser();
+            return toAjax(bizCommentService.deleteByUserId(loginUser.getUserId()));
         } else {
+            //删除评论，只能通过id删除
             return toAjax(bizCommentService.deleteBizCommentByCommentId(comment.getCommentId()));
         }
     }

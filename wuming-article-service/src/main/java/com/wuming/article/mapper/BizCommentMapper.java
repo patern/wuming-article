@@ -2,6 +2,7 @@ package com.wuming.article.mapper;
 
 import java.util.List;
 import com.wuming.article.domain.BizComment;
+import com.wuming.article.dto.BizCommentCountDto;
 import com.wuming.article.dto.BizCommentQuery;
 
 /**
@@ -35,6 +36,13 @@ public interface BizCommentMapper
      * @return 打卡评论集合
      */
     public List<BizComment> selectBizComment(BizCommentQuery bizComment);
+
+    /**
+     * 统计打卡评论的条数
+     * @param bizComment
+     * @return
+     */
+    public List<BizCommentCountDto> selectBizCommentCount(BizCommentQuery bizComment);
     /**
      * 新增打卡评论
      * 
@@ -66,4 +74,6 @@ public interface BizCommentMapper
      * @return 结果
      */
     public int deleteBizCommentByCommentIds(Long[] commentIds);
+
+    public int deleteBizCommentByUserId(Long userId);
 }

@@ -6,10 +6,30 @@ import com.wuming.article.domain.BizComment;
 import java.util.List;
 
 public class BizArticleVo extends BizArticle {
+    private String userName;
+    private String schoolName;
     private List<BizComment> comments;
     private List<BizComment> upVotes;
     private Long commentCounts;
     private Long upvoteCount;
+
+    private Boolean upvote;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getSchoolName() {
+        return schoolName;
+    }
+
+    public void setSchoolName(String schoolName) {
+        this.schoolName = schoolName;
+    }
 
     public List<BizComment> getComments() {
         return comments;
@@ -41,5 +61,13 @@ public class BizArticleVo extends BizArticle {
 
     public void setUpvoteCount(Long upvoteCount) {
         this.upvoteCount = upvoteCount;
+    }
+
+    public Boolean getUpvote() {
+        return upvote;
+    }
+
+    public void setUpvote(Boolean upvote) {
+        this.upvote = upvote;
     }
 }

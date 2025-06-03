@@ -2,6 +2,7 @@ package com.wuming.article.service;
 
 import java.util.List;
 import com.wuming.article.domain.BizComment;
+import com.wuming.article.dto.BizCommentCountDto;
 import com.wuming.article.dto.BizCommentQuery;
 
 /**
@@ -35,6 +36,13 @@ public interface IBizCommentService
      */
     public List<BizComment> selectBizComment(BizCommentQuery bizComment);
     /**
+     * 查询打卡评论条数
+     *
+     * @param bizComment 打卡评论
+     * @return 打卡评论集合
+     */
+    public List<BizCommentCountDto> selectBizCommentCount(BizCommentQuery bizComment);
+    /**
      * 新增打卡评论
      * 
      * @param bizComment 打卡评论
@@ -65,4 +73,10 @@ public interface IBizCommentService
      * @return 结果
      */
     public int deleteBizCommentByCommentId(Long commentId);
+
+    /**
+     * 根据用户id删除评论或点赞
+     * @param userId
+     */
+    public int deleteByUserId(Long userId);
 }

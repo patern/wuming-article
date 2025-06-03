@@ -37,6 +37,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="status != null  and status != ''"> and status = #{status}</if>
         </where>
     </select>
+    <select id="selectBizUser" parameterType="BizUserQuery" resultMap="BizUserResult">
+        <include refid="selectBizUserVo"/>
+        <where>
+            <if test="userIds != null  and userIds.size>0"> and user_id in
+                <foreach collection="userIds" close=")" item="item" open="(" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="schoolName != null  and schoolName != ''"> and school_name like concat('%', #{schoolName}, '%')</if>
+            <if test="openId != null  and openId != ''"> and open_id like concat('%', #{openId}, '%')</if>
+            <if test="userName != null  and userName != ''"> and user_name like concat('%', #{userName}, '%')</if>
+            <if test="nickName != null  and nickName != ''"> and nick_name like concat('%', #{nickName}, '%')</if>
+            <if test="telephone != null  and telephone != ''"> and telephone = #{telephone}</if>
+            <if test="sex != null  and sex != ''"> and sex = #{sex}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
     
     <select id="selectBizUserByUserId" parameterType="Long" resultMap="BizUserResult">
         <include refid="selectBizUserVo"/>

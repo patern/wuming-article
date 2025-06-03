@@ -48,6 +48,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
     </select>
 
+    <select id="selectBizCommentCount" parameterType="BizComment" resultType="BizCommentCountDto">
+        select article_id as articleId,comment_type as commentType,count(1) as count from t_biz_comment
+        <where>
+            <if test="articleIds != null  and articleIds.size>0"> and article_id in
+                <foreach collection="articleIds" close=")" item="item" open="(" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="commentContent != null  and commentContent != ''"> and comment_content = #{commentContent}</if>
+            <if test="commentType != null  and commentType != ''"> and comment_type = #{commentType}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+        group by article_id,comment_type
+    </select>
+
     <select id="selectBizCommentByCommentId" parameterType="Long" resultMap="BizCommentResult">
         <include refid="selectBizCommentVo"/>
         where comment_id = #{commentId}
@@ -108,4 +124,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{commentId}
         </foreach>
     </delete>
+
+    <delete id="deleteBizCommentByUserId" parameterType="String">
+        delete from t_biz_comment where user_id = #{userId}
+    </delete>
+
 </mapper>

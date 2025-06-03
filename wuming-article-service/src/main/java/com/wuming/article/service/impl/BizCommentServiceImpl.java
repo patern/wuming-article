@@ -2,6 +2,7 @@ package com.wuming.article.service.impl;
 
 import java.util.List;
 
+import com.wuming.article.dto.BizCommentCountDto;
 import com.wuming.article.dto.BizCommentQuery;
 import com.wuming.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,16 @@ public class BizCommentServiceImpl implements IBizCommentService
     {
         return bizCommentMapper.selectBizCommentList(bizComment);
     }
+    /**
+     * 查询打卡评论条数
+     *
+     * @param bizComment 打卡评论
+     * @return 打卡评论集合
+     */
+    public List<BizCommentCountDto> selectBizCommentCount(BizCommentQuery bizComment){
+        return bizCommentMapper.selectBizCommentCount(bizComment);
+    }
+
 
     /**
      * 新增打卡评论
@@ -105,5 +116,10 @@ public class BizCommentServiceImpl implements IBizCommentService
     public int deleteBizCommentByCommentId(Long commentId)
     {
         return bizCommentMapper.deleteBizCommentByCommentId(commentId);
+    }
+
+    @Override
+    public int deleteByUserId(Long userId) {
+        return bizCommentMapper.deleteBizCommentByUserId(userId);
     }
 }

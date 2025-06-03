@@ -2,6 +2,7 @@ package com.wuming.article.mapper;
 
 import java.util.List;
 import com.wuming.article.domain.BizUser;
+import com.wuming.article.dto.BizUserQuery;
 
 /**
  * 打卡用户Mapper接口
@@ -58,4 +59,6 @@ public interface BizUserMapper
      * @return 结果
      */
     public int deleteBizUserByUserIds(Long[] userIds);
+
+    List<BizUser> selectBizUser(BizUserQuery bizUser);
 }
