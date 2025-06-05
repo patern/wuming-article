@@ -59,36 +59,3 @@ spring:
         wall:
           config:
             multi-statement-allow: true
-shop:
-  wxPay:
-    #小程序appId
-    appId: wx7083ef79e1492f70
-    #小程序密钥
-    appSecret: 052b94667bc669263316c034f8d9070f
-    #商户号
-    mchId: 1718792978
-    #商户密匙v2
-    mchKey: JD9d894d8f9fjsdf3348kd2mfu3nd24j
-    #apiV3 秘钥
-    apiV3Key: Dk9dh4d8f9f94df3348kd2mfu3nI24j1
-    #商户证书序列号
-    certSerialNo: 7EC1DDF7CCAACBC3BA648FF29DBE04D9FA05AC44
-    # 网站域名
-    url: https://xxxxx
-    #微信支付p12证书
-    keyPath: /Users/patern/cert/apiclient_cert.p12
-    #生产 apiclient_key.pem证书文件的绝对路径或者以classpath:开头的类路径 E:/work/project/ljf/3-java/orderdeliver/orderdeliver-admin/src/main/resources/pem/apiclient_key-jurongzhipin.pem
-    #/root/soft/apiclient_key_fuda.pem  /opt/key/apiclient_key_fuda.pem
-    privateKeyPath: /Users/patern/cert/apiclient_key.pem
-    #生产 apiclient_cert.pem证书文件的绝对路径或者以classpath:开头的类路径 /root/soft/apiclient_cert_fuda.pem /opt/key/apiclient_cert_fuda.pem
-    privateCertPath: /Users/patern/cert/apiclient_cert.pem
-    # 微信支付异步回调本系统地址，通知url必须为直接可访问的url，不能携带参数
-    notifyUrl: /order/wx/payNotify
-    # 微信退款结果通知本系统地址，通知url必须为直接可访问的url，不能携带参数
-    refundNotify: /order/wx/refundNotify
-    # 通过code获取openid
-    accessToken: https://api.weixin.qq.com/sns/jscode2session
-    # 退款通知
-    templateIds[0]: bAj_qKhXOTS4eMyzVUgvUDXmjmH5Tt0XRqvp-6OuZOw
-    # 订单配送通知
-    templateIds[1]: uRmCdeh18sb5JmnqIGuV_ZSHsWtkVpkiGmil1JgGr-4
