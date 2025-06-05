@@ -1,6 +1,14 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+      <el-form-item label="打卡用户编码" prop="userId">
+        <el-input
+          v-model="queryParams.userId"
+          placeholder="请输入打卡用户编码"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item label="打卡标题" prop="articleTitle">
         <el-input
           v-model="queryParams.articleTitle"
@@ -9,13 +17,29 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="打卡链接" prop="articleAttaUrl">
+      <el-form-item label="文件名称" prop="fileName">
         <el-input
-          v-model="queryParams.articleAttaUrl"
-          placeholder="请输入打卡链接"
+          v-model="queryParams.fileName"
+          placeholder="请输入文件名称"
           clearable
           @keyup.enter.native="handleQuery"
         />
+      </el-form-item>
+      <el-form-item label="打卡附件连接" prop="articleAttaUrl">
+        <el-input
+          v-model="queryParams.articleAttaUrl"
+          placeholder="请输入打卡附件连接"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="链接有效时间" prop="invalidDate">
+        <el-date-picker clearable
+          v-model="queryParams.invalidDate"
+          type="date"
+          value-format="yyyy-MM-dd"
+          placeholder="请选择链接有效时间">
+        </el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -71,11 +95,19 @@
 
     <el-table v-loading="loading" :data="articleList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="打卡编号" align="center" prop="articleId" />
+      <el-table-column label="文章编码" align="center" prop="articleId" />
+      <el-table-column label="打卡用户编码" align="center" prop="userId" />
       <el-table-column label="打卡标题" align="center" prop="articleTitle" />
       <el-table-column label="打卡类型" align="center" prop="articleType" />
       <el-table-column label="打卡内容" align="center" prop="articleContent" />
-      <el-table-column label="打卡链接" align="center" prop="articleAttaUrl" />
+      <el-table-column label="文件名称" align="center" prop="fileName" />
+      <el-table-column label="打卡附件链接" align="center" prop="articleAttaUrl" />
+      <el-table-column label="链接有效时间" align="center" prop="invalidDate" width="180">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.invalidDate, '{y}-{m}-{d}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="奖励金额" align="center" prop="prize" />
       <el-table-column label="打卡状态" align="center" prop="status" />
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -106,17 +138,34 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改打卡对话框 -->
+    <!-- 添加或修改文章对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="打卡用户编码" prop="userId">
+          <el-input v-model="form.userId" placeholder="请输入打卡用户ID" />
+        </el-form-item>
         <el-form-item label="打卡标题" prop="articleTitle">
           <el-input v-model="form.articleTitle" placeholder="请输入打卡标题" />
         </el-form-item>
         <el-form-item label="打卡内容">
           <editor v-model="form.articleContent" :min-height="192"/>
         </el-form-item>
-        <el-form-item label="打卡链接" prop="articleAttaUrl">
-          <el-input v-model="form.articleAttaUrl" placeholder="请输入打卡链接" />
+        <el-form-item label="文件名称" prop="fileName">
+          <el-input v-model="form.fileName" placeholder="请输入文件名称" />
+        </el-form-item>
+        <el-form-item label="打卡附件链接" prop="articleAttaUrl">
+          <el-input v-model="form.articleAttaUrl" placeholder="请输入打卡附件连接" />
+        </el-form-item>
+        <el-form-item label="链接有效时间" prop="invalidDate">
+          <el-date-picker clearable
+            v-model="form.invalidDate"
+            type="date"
+            value-format="yyyy-MM-dd"
+            placeholder="请选择链接有效时间">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="奖励金额" prop="prize">
+          <el-input v-model="form.prize" placeholder="请输入奖励金额" />
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" placeholder="请输入备注" />
@@ -159,16 +208,22 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
+        userId: null,
         articleTitle: null,
         articleType: null,
         articleContent: null,
+        fileName: null,
         articleAttaUrl: null,
+        invalidDate: null,
         status: null,
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
+        userId: [
+          { required: true, message: "打卡用户编码不能为空", trigger: "blur" }
+        ],
         articleTitle: [
           { required: true, message: "打卡标题不能为空", trigger: "blur" }
         ],
@@ -200,10 +255,14 @@ export default {
     reset() {
       this.form = {
         articleId: null,
+        userId: null,
         articleTitle: null,
         articleType: null,
         articleContent: null,
+        fileName: null,
         articleAttaUrl: null,
+        invalidDate: null,
+        prize: null,
         status: null,
         createBy: null,
         createTime: null,

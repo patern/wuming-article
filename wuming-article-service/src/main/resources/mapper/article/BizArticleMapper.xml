@@ -10,7 +10,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="articleTitle"    column="article_title"    />
         <result property="articleType"    column="article_type"    />
         <result property="articleContent"    column="article_content"    />
+        <result property="fileName"    column="file_name"    />
         <result property="articleAttaUrl"    column="article_atta_url"    />
+        <result property="invalidDate"    column="invalid_date"    />
+        <result property="prize"    column="prize"    />
         <result property="status"    column="status"    />
         <result property="createBy"    column="create_by"    />
         <result property="createTime"    column="create_time"    />
@@ -20,17 +23,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectBizArticleVo">
-        select article_id,user_id, article_title, article_type, article_content, article_atta_url, status, create_by, create_time, update_by, update_time, remark from t_biz_article
+        select article_id, user_id, article_title, article_type, article_content, file_name, article_atta_url, invalid_date, prize, status, create_by, create_time, update_by, update_time, remark from t_biz_article
     </sql>
 
     <select id="selectBizArticleList" parameterType="BizArticle" resultMap="BizArticleResult">
         <include refid="selectBizArticleVo"/>
         <where>  
-            <if test="articleTitle != null  and articleTitle != ''"> and article_title like concat('%', #{articleTitle}, '%')</if>
-            <if test="userId != null"> and user_id = #{userId}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="articleTitle != null  and articleTitle != ''">  and article_title like concat('%', #{articleTitle}, '%')</if>
             <if test="articleType != null  and articleType != ''"> and article_type = #{articleType}</if>
             <if test="articleContent != null  and articleContent != ''"> and article_content = #{articleContent}</if>
+            <if test="fileName != null  and fileName != ''"> and file_name like concat('%', #{fileName}, '%')</if>
             <if test="articleAttaUrl != null  and articleAttaUrl != ''"> and article_atta_url = #{articleAttaUrl}</if>
+            <if test="invalidDate != null "> and invalid_date = #{invalidDate}</if>
             <if test="status != null  and status != ''"> and status = #{status}</if>
         </where>
     </select>
@@ -47,7 +52,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="articleTitle != null and articleTitle != ''">article_title,</if>
             <if test="articleType != null and articleType != ''">article_type,</if>
             <if test="articleContent != null">article_content,</if>
+            <if test="fileName != null">file_name,</if>
             <if test="articleAttaUrl != null">article_atta_url,</if>
+            <if test="invalidDate != null">invalid_date,</if>
+            <if test="prize != null">prize,</if>
             <if test="status != null">status,</if>
             <if test="createBy != null">create_by,</if>
             <if test="createTime != null">create_time,</if>
@@ -60,7 +68,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="articleTitle != null and articleTitle != ''">#{articleTitle},</if>
             <if test="articleType != null and articleType != ''">#{articleType},</if>
             <if test="articleContent != null">#{articleContent},</if>
+            <if test="fileName != null">#{fileName},</if>
             <if test="articleAttaUrl != null">#{articleAttaUrl},</if>
+            <if test="invalidDate != null">#{invalidDate},</if>
+            <if test="prize != null">#{prize},</if>
             <if test="status != null">#{status},</if>
             <if test="createBy != null">#{createBy},</if>
             <if test="createTime != null">#{createTime},</if>
@@ -73,10 +84,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <update id="updateBizArticle" parameterType="BizArticle">
         update t_biz_article
         <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
             <if test="articleTitle != null and articleTitle != ''">article_title = #{articleTitle},</if>
             <if test="articleType != null and articleType != ''">article_type = #{articleType},</if>
             <if test="articleContent != null">article_content = #{articleContent},</if>
+            <if test="fileName != null">file_name = #{fileName},</if>
             <if test="articleAttaUrl != null">article_atta_url = #{articleAttaUrl},</if>
+            <if test="invalidDate != null">invalid_date = #{invalidDate},</if>
+            <if test="prize != null">prize = #{prize},</if>
             <if test="status != null">status = #{status},</if>
             <if test="createBy != null">create_by = #{createBy},</if>
             <if test="createTime != null">create_time = #{createTime},</if>

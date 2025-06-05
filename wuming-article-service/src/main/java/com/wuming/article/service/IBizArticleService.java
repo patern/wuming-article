@@ -2,6 +2,7 @@ package com.wuming.article.service;
 
 import java.util.List;
 import com.wuming.article.domain.BizArticle;
+import com.wuming.article.dto.BizArticleCountDto;
 
 /**
  * 打卡Service接口
@@ -26,6 +27,8 @@ public interface IBizArticleService
      * @return 打卡集合
      */
     public List<BizArticle> selectBizArticleList(BizArticle bizArticle);
+
+    List<BizArticleCountDto> selectBizArticleSumList(BizArticle bizArticle);
 
     /**
      * 新增打卡

@@ -23,6 +23,11 @@
             <artifactId>wuming-common</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>weixin-java-pay</artifactId>
+            <version>4.7.5-20250516.201941</version>
+        </dependency>
     </dependencies>
 
 </project>

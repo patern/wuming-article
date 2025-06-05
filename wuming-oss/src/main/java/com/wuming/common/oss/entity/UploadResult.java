@@ -1,5 +1,9 @@
 package com.wuming.common.oss.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.util.Date;
+
 /**
  * 上传返回体
  *
@@ -16,7 +20,13 @@ public class UploadResult {
     /**
      * 文件名
      */
-    private String filename;
+    private String fileName;
+
+    /**
+     * 文件名
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date invalidDate;
 
     /**
      * 已上传对象的实体标记（用来校验文件）
@@ -31,12 +41,20 @@ public class UploadResult {
         this.url = url;
     }
 
-    public String getFilename() {
-        return filename;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setFilename(String filename) {
-        this.filename = filename;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public Date getInvalidDate() {
+        return invalidDate;
+    }
+
+    public void setInvalidDate(Date invalidDate) {
+        this.invalidDate = invalidDate;
     }
 
     public String geteTag() {

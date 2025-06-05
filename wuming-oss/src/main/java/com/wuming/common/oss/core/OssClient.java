@@ -238,8 +238,9 @@ public class OssClient {
 
         UploadResult uploadResult1 = new UploadResult();
         uploadResult1.setUrl(url.toString());
-        uploadResult1.setFilename(objectKey);
+        uploadResult1.setFileName(objectKey);
         uploadResult1.seteTag(eTag);
+        uploadResult1.setInvalidDate(ca.getTime());
         return uploadResult1;
     }
 

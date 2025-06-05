@@ -51,8 +51,8 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="评论状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择评论状态" clearable>
+      <el-form-item label="是否有效" prop="status">
+        <el-select v-model="queryParams.status" placeholder="请选择是否有效" clearable>
           <el-option
             v-for="dict in dict.type.sys_yes_no"
             :key="dict.value"
@@ -113,7 +113,8 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
+    <el-table border stripe height="500" v-loading="loading"
+    row-class-name="custom-row-height" :data="userList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="用户编码" align="center" prop="userId" />
       <el-table-column label="学校名称" align="center" prop="schoolName" />
@@ -127,7 +128,7 @@
           <dict-tag :options="dict.type.sys_user_sex" :value="scope.row.sex"/>
         </template>
       </el-table-column>
-      <el-table-column label="评论状态" align="center" prop="status">
+      <el-table-column label="是否有效" align="center" prop="status">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_yes_no" :value="scope.row.status"/>
         </template>
@@ -152,7 +153,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -388,3 +389,9 @@ export default {
   }
 }
 </script>
+<style>
+.custom-row-height .cell {
+  height: 28px; /* 设置行高 */
+  line-height: 23px; /* 文本垂直居中 */
+}
+</style>

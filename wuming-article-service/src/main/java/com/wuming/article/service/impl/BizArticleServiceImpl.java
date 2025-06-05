@@ -1,6 +1,8 @@
 package com.wuming.article.service.impl;
 
 import java.util.List;
+
+import com.wuming.article.dto.BizArticleCountDto;
 import com.wuming.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +44,18 @@ public class BizArticleServiceImpl implements IBizArticleService
     public List<BizArticle> selectBizArticleList(BizArticle bizArticle)
     {
         return bizArticleMapper.selectBizArticleList(bizArticle);
+    }
+
+    /**
+     * 查询打卡列表
+     *
+     * @param bizArticle 打卡
+     * @return 打卡
+     */
+    @Override
+    public List<BizArticleCountDto> selectBizArticleSumList(BizArticle bizArticle)
+    {
+        return bizArticleMapper.selectBizArticleRankingList(bizArticle);
     }
 
     /**

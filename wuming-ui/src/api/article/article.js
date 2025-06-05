@@ -8,7 +8,14 @@ export function listArticle(query) {
     params: query
   })
 }
-
+// 查询打卡列表
+export function listSumArticle(query) {
+  return request({
+    url: '/article/article/sumList',
+    method: 'get',
+    params: query
+  })
+}
 // 查询打卡详细
 export function getArticle(articleId) {
   return request({

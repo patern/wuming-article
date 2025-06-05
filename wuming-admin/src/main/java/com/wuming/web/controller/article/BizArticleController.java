@@ -2,6 +2,8 @@ package com.wuming.web.controller.article;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.wuming.article.dto.BizArticleCountDto;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,6 +47,19 @@ public class BizArticleController extends BaseController
         List<BizArticle> list = bizArticleService.selectBizArticleList(bizArticle);
         return getDataTable(list);
     }
+
+    /**
+     * 查询打卡统计列表
+     */
+    @PreAuthorize("@ss.hasPermi('article:article:list')")
+    @GetMapping("/sumList")
+    public TableDataInfo sumList(BizArticle bizArticle)
+    {
+        startPage();
+        List<BizArticleCountDto> list = bizArticleService.selectBizArticleSumList(bizArticle);
+        return getDataTable(list);
+    }
+
 
     /**
      * 导出打卡列表

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuming.article.mapper.BizPrizeMapper">
+    
+    <resultMap type="BizPrize" id="BizPrizeResult">
+        <result property="prizeId"    column="prize_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="prizeNo"    column="prize_no"    />
+        <result property="transferBillNo"    column="transfer_bill_no"    />
+        <result property="money"    column="money"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectBizPrizeVo">
+        select prize_id, user_id, prize_no, transfer_bill_no, money, status, create_by, create_time, update_by, update_time from t_biz_prize
+    </sql>
+
+    <select id="selectBizPrizeList" parameterType="BizPrize" resultMap="BizPrizeResult">
+        <include refid="selectBizPrizeVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="prizeNo != null  and prizeNo != ''"> and prize_no = #{prizeNo}</if>
+            <if test="transferBillNo != null  and transferBillNo != ''"> and transfer_bill_no = #{transferBillNo}</if>
+            <if test="money != null "> and money = #{money}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectBizPrizeByPrizeId" parameterType="Long" resultMap="BizPrizeResult">
+        <include refid="selectBizPrizeVo"/>
+        where prize_id = #{prizeId}
+    </select>
+
+    <insert id="insertBizPrize" parameterType="BizPrize" useGeneratedKeys="true" keyProperty="prizeId">
+        insert into t_biz_prize
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="prizeNo != null and prizeNo != ''">prize_no,</if>
+            <if test="transferBillNo != null and transferBillNo != ''">transfer_bill_no,</if>
+            <if test="money != null">money,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="prizeNo != null and prizeNo != ''">#{prizeNo},</if>
+            <if test="transferBillNo != null and transferBillNo != ''">#{transferBillNo},</if>
+            <if test="money != null">#{money},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBizPrize" parameterType="BizPrize">
+        update t_biz_prize
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="prizeNo != null and prizeNo != ''">prize_no = #{prizeNo},</if>
+            <if test="transferBillNo != null and transferBillNo != ''">transfer_bill_no = #{transferBillNo},</if>
+            <if test="money != null">money = #{money},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where prize_id = #{prizeId}
+    </update>
+
+    <delete id="deleteBizPrizeByPrizeId" parameterType="Long">
+        delete from t_biz_prize where prize_id = #{prizeId}
+    </delete>
+
+    <delete id="deleteBizPrizeByPrizeIds" parameterType="String">
+        delete from t_biz_prize where prize_id in 
+        <foreach item="prizeId" collection="array" open="(" separator="," close=")">
+            #{prizeId}
+        </foreach>
+    </delete>
+</mapper>

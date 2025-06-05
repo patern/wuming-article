@@ -2,6 +2,7 @@ package com.wuming.article.mapper;
 
 import java.util.List;
 import com.wuming.article.domain.BizArticle;
+import com.wuming.article.dto.BizArticleCountDto;
 
 /**
  * 打卡Mapper接口
@@ -26,6 +27,14 @@ public interface BizArticleMapper
      * @return 打卡集合
      */
     public List<BizArticle> selectBizArticleList(BizArticle bizArticle);
+
+    /**
+     * 统计打卡列表
+     *
+     * @param bizArticle 打卡
+     * @return 打卡集合
+     */
+    public List<BizArticleCountDto> selectBizArticleRankingList(BizArticle bizArticle);
 
     /**
      * 新增打卡

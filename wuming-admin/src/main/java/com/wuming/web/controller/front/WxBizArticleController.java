@@ -1,8 +1,11 @@
 package com.wuming.web.controller.front;
 
+import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson2.JSONObject;
 import com.wuming.article.domain.BizArticle;
 import com.wuming.article.domain.BizComment;
 import com.wuming.article.domain.BizUser;
+import com.wuming.article.dto.BizArticleCountDto;
 import com.wuming.article.dto.BizCommentCountDto;
 import com.wuming.article.dto.BizCommentQuery;
 import com.wuming.article.dto.BizUserQuery;
@@ -11,17 +14,23 @@ import com.wuming.article.service.IBizCommentService;
 import com.wuming.article.service.IBizUserService;
 import com.wuming.common.annotation.Anonymous;
 import com.wuming.common.annotation.Log;
+import com.wuming.common.constant.CacheConstants;
 import com.wuming.common.core.controller.BaseController;
 import com.wuming.common.core.domain.AjaxResult;
 import com.wuming.common.core.domain.model.LoginUser;
 import com.wuming.common.core.page.TableDataInfo;
+import com.wuming.common.core.redis.RedisCache;
 import com.wuming.common.enums.BusinessType;
+import com.wuming.common.oss.constant.OssConstant;
 import com.wuming.common.oss.core.OssClient;
 import com.wuming.common.oss.entity.UploadResult;
 import com.wuming.common.oss.factory.OssFactory;
 import com.wuming.common.utils.SecurityUtils;
+import com.wuming.common.utils.StringUtils;
 import com.wuming.common.utils.poi.ExcelUtil;
+import com.wuming.system.service.ISysConfigService;
 import com.wuming.web.controller.front.vo.BizArticleVo;
+import com.wuming.web.controller.front.vo.UserPrizeVo;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
 import org.springframework.beans.BeanUtils;
@@ -32,8 +41,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -54,7 +64,11 @@ public class WxBizArticleController extends BaseController {
     private IBizUserService bizUserService;
     @Autowired
     private OssFactory ossFactory;
+    @Autowired
+    private ISysConfigService configService;
 
+    @Autowired
+    private RedisCache redisCache;
 
     /**
      * 查询打卡列表
@@ -66,6 +80,65 @@ public class WxBizArticleController extends BaseController {
     @GetMapping("/list")
     @Anonymous
     public TableDataInfo list(BizArticle bizArticle) {
+        startPage();
+        List<BizArticle> list = bizArticleService.selectBizArticleList(bizArticle);
+        if (CollectionUtils.isEmpty(list)) {
+            return getDataTable(list);
+        }
+        List<Long> ids = list.stream().map(BizArticle::getArticleId).collect(Collectors.toList());
+        BizCommentQuery query = new BizCommentQuery();
+        query.setArticleIds(ids);
+        query.setStatus("0");
+        List<BizCommentCountDto> comments = bizCommentService.selectBizCommentCount(query);
+
+        List<Long> userIds = list.stream().map(BizArticle::getUserId).collect(Collectors.toList());
+        BizUserQuery query1 = new BizUserQuery();
+        query1.setUserIds(userIds);
+        query1.setStatus("0");
+        List<BizUser> users = bizUserService.selectBizUser(query1);
+        Map<Long, BizUser> userMap = users.stream().collect(Collectors.toMap(BizUser::getUserId, v -> v));
+
+        List<BizArticleVo> subComments = Lists.newArrayList();
+
+        Map<Long, List<BizCommentCountDto>> commentMap = comments.stream().collect(Collectors.groupingBy(BizCommentCountDto::getArticleId));
+
+        for (BizArticle article : list) {
+            BizArticleVo vo = new BizArticleVo();
+            BeanUtils.copyProperties(article, vo);
+            BizUser u = userMap.get(article.getUserId());
+            if (null != u) {
+                vo.setUserName(u.getNickName());
+                vo.setSchoolName(u.getSchoolName());
+            }
+            List<BizCommentCountDto> comments1 = commentMap.get(article.getArticleId());
+            if (CollectionUtils.isNotEmpty(comments1)) {
+                List<BizCommentCountDto> comments11 = comments1.stream().filter(e -> e.getCommentType().equals("1")).collect(Collectors.toList());
+                if (CollectionUtils.isNotEmpty(comments11)) {
+                    vo.setUpvoteCount(comments11.get(0).getCount());
+                }
+                List<BizCommentCountDto> comments12 = comments1.stream().filter(e -> e.getCommentType().equals("2")).collect(Collectors.toList());
+                if (CollectionUtils.isNotEmpty(comments12)) {
+                    vo.setCommentCounts(comments12.get(0).getCount());
+                }
+            } else {
+                vo.setUpvoteCount(0l);
+                vo.setCommentCounts(0l);
+            }
+            subComments.add(vo);
+        }
+        return getDataTable(subComments);
+    }
+
+    /**
+     * 查询打卡列表
+     * 查询用户自己的设置 userId，并且状态可以是空，查询所有
+     * 查询详情的 无须设置userId, 但是需要设置状态是 0，表示查询状态正常的，没有被用户自己作废，或者被管理员下架的
+     * 小程序点击评论和点赞的时候必须获取当前用户信息，如果判断获取的用户id和评论和点赞的userId有当前用户，就表示为点亮状态，否则为未点亮装
+     * 并且显示评论总条数（只显示前5条，更多的需要点击详情查看，进入详情就需要登陆），点赞数量
+     */
+    @GetMapping("/ranking/list")
+    @Anonymous
+    public TableDataInfo rankingList(BizArticle bizArticle) {
         startPage();
         List<BizArticle> list = bizArticleService.selectBizArticleList(bizArticle);
         if (CollectionUtils.isEmpty(list)) {
@@ -152,7 +225,7 @@ public class WxBizArticleController extends BaseController {
             vo.setCommentCounts(Long.valueOf(vo.getComments().size()));
             //是否有点赞当前打卡
             vo.setUpvote(comments.stream().filter(e -> e.getCommentType().equals("1")
-                    && e.getUserId().equals(SecurityUtils.getUserId())).collect(Collectors.toList()).size()>0);
+                    && e.getUserId().equals(SecurityUtils.getLoginUser().getUser().getUserId())).collect(Collectors.toList()).size() > 0);
             BizUser u = userMap.get(article.getUserId());
             if (null != u) {
                 vo.setUserName(u.getNickName());
@@ -197,7 +270,8 @@ public class WxBizArticleController extends BaseController {
     @PostMapping
     public AjaxResult add(@RequestBody BizArticle bizArticle) {
         bizArticle.setStatus("0");
-        return toAjax(bizArticleService.insertBizArticle(bizArticle));
+        bizArticleService.insertBizArticle(bizArticle);
+        return success(bizArticle.getArticleId());
     }
 
     /**
@@ -230,9 +304,65 @@ public class WxBizArticleController extends BaseController {
     /**
      * 删除打卡
      */
-    @Log(title = "打卡", businessType = BusinessType.DELETE)
+    @Log(title = "作废", businessType = BusinessType.DELETE)
     @DeleteMapping("/{articleIds}")
     public AjaxResult remove(@PathVariable Long[] articleIds) {
         return toAjax(bizArticleService.deleteBizArticleByArticleIds(articleIds));
+    }
+
+    /**
+     * 查询红包配置
+     */
+    @GetMapping("/getPrizeConfig")
+    public AjaxResult getPrizeConfig() {
+        String configKey = configService.selectConfigByKey(CacheConstants.PRIZE_CONFIG_KEY);
+        //不同金额的个数
+        Map<String, Integer> map = JSONObject.parseObject(configKey, Map.class);
+        List<BigDecimal> prize = new ArrayList<>();
+        for (String key : map.keySet()) {
+            Integer count = map.get(key);
+            for (int i = 0; i < count; i++) {
+                if (key.contains("-")) {
+                    double a = Double.valueOf(key.split("-")[0]);
+                    double b = Double.valueOf(key.split("-")[1]);
+                    double randomDouble = a + (b - a) * ThreadLocalRandom.current().nextDouble();
+                    prize.add(new BigDecimal(randomDouble).setScale(2, BigDecimal.ROUND_HALF_UP));
+                } else {
+                    prize.add(new BigDecimal(key).setScale(2, BigDecimal.ROUND_HALF_UP));
+                }
+            }
+        }
+        redisCache.setCacheObject(CacheConstants.PRIZE_USER_PRICE_ALL + ":" + SecurityUtils.getLoginUser().getUser().getUserId(), prize);
+        return success(prize);
+    }
+
+    @PostMapping("/doPrize")
+    public AjaxResult doPrize(@RequestBody UserPrizeVo prizeVo) {
+        if (null == prizeVo.getPrize()) {
+            return error("奖金金额不能为空");
+        }
+        if (null == prizeVo.getUserId()) {
+            return error("用户不能为空");
+        }
+
+        if (null == prizeVo.getArticleId()) {
+            return error("打卡不能为空");
+        }
+        if (prizeVo.getUserId().equals(SecurityUtils.getLoginUser().getUser().getUserId())) {
+            return error("用户不匹配");
+        }
+        List<BigDecimal> prize = redisCache.getCacheObject(CacheConstants.PRIZE_USER_PRICE_ALL +
+                ":" + SecurityUtils.getLoginUser().getUser().getUserId());
+        if (!prize.contains(prizeVo.getPrize())) {
+            return error("金额非法");
+        }
+        BizArticle article = bizArticleService.selectBizArticleByArticleId(prizeVo.getArticleId());
+        if (null==article){
+            return error("未找到对应打卡记录");
+        }
+        BizArticle upArticle = new BizArticleVo();
+        upArticle.setArticleId(article.getArticleId());
+        upArticle.setPrize(prizeVo.getPrize());
+        return toAjax(bizArticleService.updateBizArticle(upArticle));
     }
 }

@@ -41,4 +41,18 @@ public class CacheConstants
      * 登录账户密码错误次数 redis key
      */
     public static final String PWD_ERR_CNT_KEY = "pwd_err_cnt:";
+
+    /**
+     * 默认红包奖励配置KEY
+     */
+    public static final String PRIZE_CONFIG_KEY = "sys_prize:default_config";
+
+    /**
+     * 用户可以抽的奖金
+     */
+    public static final String PRIZE_USER_PRICE_ALL = "sys_prize:user_prize_all";
+    /**
+     * 支付配置
+     */
+    public static final String WX_PAY_CONFIG = "sys_config:wx_pay:config";
 }
