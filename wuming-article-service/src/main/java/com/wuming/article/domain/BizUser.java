@@ -52,6 +52,7 @@ public class BizUser extends BaseEntity
     @Excel(name = "评论状态", readConverterExp = "0=正常,1=关闭")
     private String status;
 
+    private String avatarUrl;
     /**
      * token信息
      */
@@ -145,6 +146,14 @@ public class BizUser extends BaseEntity
     public String getStatus() 
     {
         return status;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 
     public String getToken() {

@@ -2,13 +2,21 @@ package com.wuming.web.controller.front;
 
 import com.alibaba.fastjson2.JSON;
 import com.github.binarywang.wxpay.bean.notify.SignatureHeader;
+import com.github.binarywang.wxpay.constant.WxPayConstants;
 import com.github.binarywang.wxpay.exception.WxPayException;
+import com.wuming.article.domain.BizArticle;
+import com.wuming.article.domain.BizPrize;
+import com.wuming.article.dto.BizArticleCountDto;
+import com.wuming.article.service.IBizArticleService;
+import com.wuming.article.service.IBizPrizeService;
 import com.wuming.article.service.IWxService;
 import com.wuming.common.annotation.Anonymous;
 import com.wuming.common.core.controller.BaseController;
 import com.wuming.common.core.domain.AjaxResult;
 import com.wuming.common.utils.SecurityUtils;
+import com.wuming.web.controller.front.vo.BizArticleVo;
 import com.wuming.web.controller.front.vo.PayVo;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +30,18 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/order/wx")
-public class WxController  extends BaseController{
+public class WxController extends BaseController {
     private static final Logger loggerPay = LoggerFactory.getLogger(WxController.class);
     @Autowired
     private IWxService wxService;
+    @Autowired
+    private IBizPrizeService prizeService;
+    @Autowired
+    private IBizArticleService bizArticleService;
 
     @RequestMapping("/getOpenId/{jsCode}")
     @Anonymous
@@ -36,26 +49,46 @@ public class WxController  extends BaseController{
         try {
             return success(wxService.getUserOpenId(jsCode));
         } catch (Exception e) {
-            loggerPay.error("获取openId失败",e);
+            loggerPay.error("获取openId失败", e);
         }
-        return  error("获取openId失败!");
+        return error("获取openId失败!");
     }
 
     @RequestMapping("/entPay")
     public AjaxResult entPay(@RequestBody PayVo pay) {
-        if (null==pay || null==pay.getUserId() || null==pay.getMoney()){
+        if (null == pay || null == pay.getUserId() || null == pay.getMoney()) {
             return error("参数不完整，无法提现");
         }
-        if ( null==pay.getMoney()|| pay.getMoney().compareTo(new BigDecimal(0.1))<=0){
+        if (null == pay.getMoney() || pay.getMoney().compareTo(new BigDecimal(0.1)) <= 0) {
             return error("提现金额非法,不能少于0.1");
         }
-        if (!SecurityUtils.getLoginUser().getUser().getUserId().equals(pay.getUserId())){
+        if (!SecurityUtils.getLoginUser().getUser().getUserId().equals(pay.getUserId())) {
             return error("非用户本人,不能提现");
         }
+
+        BizArticle article = new BizArticleVo();
+        article.setUserId(pay.getUserId());
+        List<BizArticleCountDto> countDtos = bizArticleService.selectBizArticleSumList(article);
+        //已经转成功或者锁定中的金额
+        BizPrize prize = new BizPrize();
+        prize.setUserId(pay.getUserId());
+//        prize.setStatus(WxPayConstants.TransformBillState.SUCCESS);
+        List<BizPrize> prizes = prizeService.selectBizPrizeList(prize);
+        BigDecimal total = BigDecimal.ZERO;
+        if (CollectionUtils.isNotEmpty(countDtos)) {
+            total = countDtos.get(0).getTotalPrize();
+            if (CollectionUtils.isNotEmpty(prizes)) {
+                BigDecimal sum = prizes.stream().map(e -> e.getMoney()).reduce(BigDecimal.ZERO, BigDecimal::add);
+                total = total.subtract(sum);
+            }
+        }
+        if (total.compareTo(pay.getMoney())<0) {
+            return error("余额不足，不能提现");
+        }
         try {
-            wxService.payPrize(pay.getUserId(),pay.getMoney());
+            return success(wxService.payPrize(pay.getUserId(), pay.getMoney()));
         } catch (WxPayException e) {
-            loggerPay.error("提现失败",e);
+            loggerPay.error("提现失败", e);
         }
         return error("申请提现失败");
     }
@@ -63,9 +96,9 @@ public class WxController  extends BaseController{
     @RequestMapping("/cancelTransfer/{outBillNo}")
     public AjaxResult cancelTransfer(@PathVariable("outBillNo") String outBillNo) {
         try {
-           return  success(wxService.cancelTransfer(outBillNo));
+            return success(wxService.cancelTransfer(outBillNo));
         } catch (WxPayException e) {
-            loggerPay.error("撤销转账失败",e);
+            loggerPay.error("撤销转账失败", e);
         }
         return error("撤销转账失败");
     }
@@ -82,7 +115,7 @@ public class WxController  extends BaseController{
         try {
             return success(wxService.getTransferOrder(outBillNo));
         } catch (WxPayException e) {
-            loggerPay.error("查询转账失败",e);
+            loggerPay.error("查询转账失败", e);
         }
         return error("查询转账失败");
     }
@@ -106,7 +139,7 @@ public class WxController  extends BaseController{
         String notifyData = fetchRequest2Str(request);
         loggerPay.info("SignatureHeader:" + JSON.toJSONString(header));
         loggerPay.info("notifyData:" + notifyData);
-        return wxService.payTransferNotify(header,notifyData);
+        return wxService.payTransferNotify(header, notifyData);
     }
 
     /**

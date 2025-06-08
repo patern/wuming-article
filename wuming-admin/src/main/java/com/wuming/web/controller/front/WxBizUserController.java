@@ -119,7 +119,7 @@ public class WxBizUserController extends BaseController {
 
             BizPrize prize = new BizPrize();
             prize.setUserId(bizUser.getUserId());
-            prize.setStatus(WxPayConstants.TransformBillState.SUCCESS);
+//            prize.setStatus(WxPayConstants.TransformBillState.SUCCESS);
             List<BizPrize> prizes = prizeService.selectBizPrizeList(prize);
             if (CollectionUtils.isNotEmpty(countDtos)){
                 bizUser.setPrizeTotal(countDtos.get(0).getTotalPrize());
@@ -129,7 +129,6 @@ public class WxBizUserController extends BaseController {
                         BigDecimal left = bizUser.getPrizeTotal().subtract(sum);
                         bizUser.setPrizeTotal(left);
                     }
-                    bizUser.setPrizeTotal(countDtos.get(0).getTotalPrize());
                 }
             }
             return success(bizUser);

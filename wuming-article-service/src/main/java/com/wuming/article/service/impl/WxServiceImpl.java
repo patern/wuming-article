@@ -104,9 +104,10 @@ public class WxServiceImpl implements IWxService {
         // 调用转账接口
         TransferBillsResult result = wxPayService.getTransferService().transferBills(request);
         BizPrize prize = new BizPrize();
+        prize.setUserId(userId);
         prize.setPrizeNo(result.getOutBillNo());
         prize.setTransferBillNo(result.getTransferBillNo());
-        prize.setTransferBillNo(result.getState());
+        prize.setStatus(result.getState());
         prize.setMoney(money);
         bizPrizeService.insertBizPrize(prize);
         return result;
