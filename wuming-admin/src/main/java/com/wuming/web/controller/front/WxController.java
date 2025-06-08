@@ -2,18 +2,12 @@ package com.wuming.web.controller.front;
 
 import com.alibaba.fastjson2.JSON;
 import com.github.binarywang.wxpay.bean.notify.SignatureHeader;
-import com.github.binarywang.wxpay.bean.notify.WxPayNotifyV3Response;
-import com.github.binarywang.wxpay.bean.transfer.*;
-import com.github.binarywang.wxpay.constant.WxPayConstants;
 import com.github.binarywang.wxpay.exception.WxPayException;
-import com.github.binarywang.wxpay.service.WxPayService;
-import com.wuming.article.pay.WxPayFactory;
 import com.wuming.article.service.IWxService;
 import com.wuming.common.annotation.Anonymous;
 import com.wuming.common.core.controller.BaseController;
 import com.wuming.common.core.domain.AjaxResult;
 import com.wuming.common.utils.SecurityUtils;
-import com.wuming.common.utils.http.HttpUtils;
 import com.wuming.web.controller.front.vo.PayVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,15 +22,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
 
 @RestController
 @RequestMapping("/order/wx")
 public class WxController  extends BaseController{
     private static final Logger loggerPay = LoggerFactory.getLogger(WxController.class);
-    private final ReentrantLock transferNotifyLock = new ReentrantLock();
     @Autowired
     private IWxService wxService;
 
@@ -56,10 +46,10 @@ public class WxController  extends BaseController{
         if (null==pay || null==pay.getUserId() || null==pay.getMoney()){
             return error("参数不完整，无法提现");
         }
-        if ( null==pay.getMoney()|| pay.getMoney().compareTo(new BigDecimal(0))<=0){
-            return error("提现金额非法");
+        if ( null==pay.getMoney()|| pay.getMoney().compareTo(new BigDecimal(0.1))<=0){
+            return error("提现金额非法,不能少于0.1");
         }
-        if (SecurityUtils.getLoginUser().getUser().getUserId().equals(pay.getUserId())){
+        if (!SecurityUtils.getLoginUser().getUser().getUserId().equals(pay.getUserId())){
             return error("非用户本人,不能提现");
         }
         try {

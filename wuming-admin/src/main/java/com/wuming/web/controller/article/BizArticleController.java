@@ -4,6 +4,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import com.wuming.article.dto.BizArticleCountDto;
+import com.wuming.article.dto.BizArticleQuery;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,7 +42,7 @@ public class BizArticleController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('article:article:list')")
     @GetMapping("/list")
-    public TableDataInfo list(BizArticle bizArticle)
+    public TableDataInfo list(BizArticleQuery bizArticle)
     {
         startPage();
         List<BizArticle> list = bizArticleService.selectBizArticleList(bizArticle);
@@ -67,7 +68,7 @@ public class BizArticleController extends BaseController
     @PreAuthorize("@ss.hasPermi('article:article:export')")
     @Log(title = "打卡", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, BizArticle bizArticle)
+    public void export(HttpServletResponse response, BizArticleQuery bizArticle)
     {
         List<BizArticle> list = bizArticleService.selectBizArticleList(bizArticle);
         ExcelUtil<BizArticle> util = new ExcelUtil<BizArticle>(BizArticle.class);

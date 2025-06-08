@@ -26,7 +26,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select article_id, user_id, article_title, article_type, article_content, file_name, article_atta_url, invalid_date, prize, status, create_by, create_time, update_by, update_time, remark from t_biz_article
     </sql>
 
-    <select id="selectBizArticleList" parameterType="BizArticle" resultMap="BizArticleResult">
+    <select id="selectBizArticleList" parameterType="BizArticleQuery" resultMap="BizArticleResult">
         <include refid="selectBizArticleVo"/>
         <where>  
             <if test="userId != null "> and user_id = #{userId}</if>
@@ -35,11 +35,41 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="articleContent != null  and articleContent != ''"> and article_content = #{articleContent}</if>
             <if test="fileName != null  and fileName != ''"> and file_name like concat('%', #{fileName}, '%')</if>
             <if test="articleAttaUrl != null  and articleAttaUrl != ''"> and article_atta_url = #{articleAttaUrl}</if>
+            <if test="prize != null "> and prize >= #{prize}</if>
             <if test="invalidDate != null "> and invalid_date = #{invalidDate}</if>
+            <if test="createBeginTime != null "> and create_time >= #{createBeginTime}</if>
+            <if test="createEndTime != null "> and create_time &lt; #{createEndTime}</if>
             <if test="status != null  and status != ''"> and status = #{status}</if>
         </where>
+        order by create_time desc
     </select>
-    
+    <select id="selectBizArticleRankingList" parameterType="BizArticle" resultType="BizArticleCountDto">
+        select
+        ss.user_id,
+        sum(articleCount) as allCount,
+        sum(if(article_type='1',articleCount,0)) as videoCount,
+        sum(if(article_type='2',articleCount,0)) as voiceCount,
+        sum(if(article_type='3',articleCount,0)) as articleCount,
+        sum(if(ss.status='0',articleCount,0)) as activeCount,
+        sum(if(ss.status='1',articleCount,0)) as inActiveCount,
+        sum(ss.prize) as totalPrize,
+        sum(if(ss.status='2',articleCount,0)) as delCount,
+        u.user_name as userName,u.nick_name as nickName,u.telephone,u.school_name as schoolName
+        from (
+        SELECT user_id, article_type,sum(prize) as prize, status, count(1) AS articleCount FROM t_biz_article
+        <where>
+            <if test="articleTitle != null  and articleTitle != ''"> and article_title like concat('%', #{articleTitle}, '%')</if>
+            <if test="userId != null"> and user_id = #{userId}</if>
+            <if test="articleType != null  and articleType != ''"> and article_type = #{articleType}</if>
+            <if test="fileName != null  and fileName != ''"> and file_name like concat('%', #{fileName}, '%')</if>
+            <if test="articleContent != null  and articleContent != ''"> and article_content = #{articleContent}</if>
+            <if test="articleAttaUrl != null  and articleAttaUrl != ''"> and article_atta_url = #{articleAttaUrl}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+        GROUP BY user_id, article_type,status) ss left join t_biz_user u on ss.user_id=u.user_id
+        GROUP BY ss.user_id
+        ORDER BY allCount
+    </select>
     <select id="selectBizArticleByArticleId" parameterType="Long" resultMap="BizArticleResult">
         <include refid="selectBizArticleVo"/>
         where article_id = #{articleId}

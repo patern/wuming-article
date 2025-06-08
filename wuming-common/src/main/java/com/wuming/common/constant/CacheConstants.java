@@ -46,6 +46,18 @@ public class CacheConstants
      * 默认红包奖励配置KEY
      */
     public static final String PRIZE_CONFIG_KEY = "sys_prize:default_config";
+    /**
+     * 默认红包奖励配置KEY
+     */
+    public static final String PRIZE_LEVEL_KEY = "sys_prize:level_config";
+    /**
+     * 10天联系打卡红包奖励配置KEY
+     */
+    public static final String PRIZE_TEN_CONFIG_KEY = "sys_prize:ten_config";
+    /**
+     * 25天联系打卡红包奖励配置KEY
+     */
+    public static final String PRIZE_25_CONFIG_KEY = "sys_prize:twenty_five_config";
 
     /**
      * 用户可以抽的奖金

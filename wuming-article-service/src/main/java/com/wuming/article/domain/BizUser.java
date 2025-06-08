@@ -5,6 +5,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import com.wuming.common.annotation.Excel;
 import com.wuming.common.core.domain.BaseEntity;
 
+import java.math.BigDecimal;
+
 /**
  * 打卡用户对象 t_biz_user
  * 
@@ -54,6 +56,7 @@ public class BizUser extends BaseEntity
      * token信息
      */
     private String token;
+    private BigDecimal prizeTotal;
     public void setUserId(Long userId) 
     {
         this.userId = userId;
@@ -150,6 +153,14 @@ public class BizUser extends BaseEntity
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public BigDecimal getPrizeTotal() {
+        return prizeTotal;
+    }
+
+    public void setPrizeTotal(BigDecimal prizeTotal) {
+        this.prizeTotal = prizeTotal;
     }
 
     @Override

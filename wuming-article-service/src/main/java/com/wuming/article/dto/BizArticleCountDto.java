@@ -1,6 +1,8 @@
 package com.wuming.article.dto;
 
 
+import java.math.BigDecimal;
+
 public class BizArticleCountDto {
     private Long userId;
 
@@ -29,6 +31,8 @@ public class BizArticleCountDto {
     private String nickName;
 
     private String telephone;
+
+    private BigDecimal totalPrize;
 
     public Long getUserId() {
         return userId;
@@ -140,5 +144,13 @@ public class BizArticleCountDto {
 
     public void setTelephone(String telephone) {
         this.telephone = telephone;
+    }
+
+    public BigDecimal getTotalPrize() {
+        return totalPrize;
+    }
+
+    public void setTotalPrize(BigDecimal totalPrize) {
+        this.totalPrize = totalPrize;
     }
 }

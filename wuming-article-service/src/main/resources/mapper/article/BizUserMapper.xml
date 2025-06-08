@@ -22,7 +22,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectBizUserVo">
-        select user_id, school_name, open_id, user_name, nick_name, telephone, id_card, sex, status, create_by, create_time, update_by, update_time, remark from t_biz_user
+        select user_id, school_name, open_id, user_name, nick_name, telephone, id_card, avatar_url, sex, status, create_by, create_time, update_by, update_time, remark from t_biz_user
     </sql>
 
     <select id="selectBizUserList" parameterType="BizUser" resultMap="BizUserResult">
@@ -36,6 +36,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="sex != null  and sex != ''"> and sex = #{sex}</if>
             <if test="status != null  and status != ''"> and status = #{status}</if>
         </where>
+        order by create_time desc
     </select>
     <select id="selectBizUser" parameterType="BizUserQuery" resultMap="BizUserResult">
         <include refid="selectBizUserVo"/>
@@ -53,6 +54,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="sex != null  and sex != ''"> and sex = #{sex}</if>
             <if test="status != null  and status != ''"> and status = #{status}</if>
         </where>
+        order by create_time desc
     </select>
     
     <select id="selectBizUserByUserId" parameterType="Long" resultMap="BizUserResult">
@@ -69,6 +71,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="nickName != null and nickName != ''">nick_name,</if>
             <if test="telephone != null and telephone != ''">telephone,</if>
             <if test="idCard != null and idCard != ''">id_card,</if>
+            <if test="avatarUrl != null and avatarUrl != ''">avatar_url,</if>
             <if test="sex != null and sex != ''">sex,</if>
             <if test="status != null">status,</if>
             <if test="createBy != null">create_by,</if>
@@ -84,6 +87,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="nickName != null and nickName != ''">#{nickName},</if>
             <if test="telephone != null and telephone != ''">#{telephone},</if>
             <if test="idCard != null and idCard != ''">#{idCard},</if>
+            <if test="avatarUrl != null and avatarUrl != ''">#{avatarUrl},</if>
             <if test="sex != null and sex != ''">#{sex},</if>
             <if test="status != null">#{status},</if>
             <if test="createBy != null">#{createBy},</if>
@@ -103,6 +107,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="nickName != null and nickName != ''">nick_name = #{nickName},</if>
             <if test="telephone != null and telephone != ''">telephone = #{telephone},</if>
             <if test="idCard != null and idCard != ''">id_card = #{idCard},</if>
+            <if test="avatarUrl != null and avatarUrl != ''">avatar_url = #{avatarUrl},</if>
             <if test="sex != null and sex != ''">sex = #{sex},</if>
             <if test="status != null">status = #{status},</if>
             <if test="createBy != null">create_by = #{createBy},</if>
