@@ -153,12 +153,19 @@ public class WxBizUserController extends BaseController {
         if (StringUtils.isEmpty(bizUser.getOpenId())) {
             return error("用户openId不能为空");
         }
+        String openId = null;
+        try {
+            openId = wxService.getUserOpenId(bizUser.getOpenId());
+        } catch (Exception e) {
+            logger.error("获取openId失败",e);
+        }
         BizUser user = new BizUser();
-        user.setOpenId(bizUser.getOpenId());
+        user.setOpenId(openId);
         List<BizUser> users = bizUserService.selectBizUserList(user);
         if (CollectionUtils.isNotEmpty(users)) {
             return error("用户已经注册");
         }
+        bizUser.setOpenId(openId);
         return toAjax(bizUserService.insertBizUser(bizUser));
     }
 
