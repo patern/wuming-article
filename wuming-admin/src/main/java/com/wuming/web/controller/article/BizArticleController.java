@@ -86,7 +86,7 @@ public class BizArticleController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('article:article:list')")
     @GetMapping("/sumList")
-    public TableDataInfo sumList(BizArticle bizArticle)
+    public TableDataInfo sumList(BizArticleQuery bizArticle)
     {
         startPage();
         List<BizArticleCountDto> list = bizArticleService.selectBizArticleSumList(bizArticle);

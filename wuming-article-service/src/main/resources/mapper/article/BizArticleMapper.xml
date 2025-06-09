@@ -39,14 +39,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="invalidDate != null "> and invalid_date = #{invalidDate}</if>
             <if test="createBeginTime != null "> and create_time >= #{createBeginTime}</if>
             <if test="createEndTime != null "> and create_time &lt; #{createEndTime}</if>
+            <if test="prize != null "> and prize > #{prize}</if>
             <if test="status != null  and status != ''"> and status = #{status}</if>
         </where>
         order by create_time desc
     </select>
-    <select id="selectBizArticleRankingList" parameterType="BizArticle" resultType="BizArticleCountDto">
+    <select id="selectBizArticleRankingList" parameterType="BizArticleQuery" resultType="BizArticleCountDto">
         select
         ss.user_id,
         sum(articleCount) as allCount,
+        sum(reportDay) as reportDay,
         sum(if(article_type='1',articleCount,0)) as videoCount,
         sum(if(article_type='2',articleCount,0)) as voiceCount,
         sum(if(article_type='3',articleCount,0)) as articleCount,
@@ -56,7 +58,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         sum(if(ss.status='2',articleCount,0)) as delCount,
         u.user_name as userName,u.nick_name as nickName,u.telephone,u.school_name as schoolName
         from (
-        SELECT user_id, article_type,sum(prize) as prize, status, count(1) AS articleCount FROM t_biz_article
+        SELECT user_id,count(DISTINCT DATE_FORMAT(create_time,'%Y,%M,%D')) as reportDay,
+            article_type,sum(prize) as prize, status, count(1) AS articleCount FROM t_biz_article
         <where>
             <if test="articleTitle != null  and articleTitle != ''"> and article_title like concat('%', #{articleTitle}, '%')</if>
             <if test="userId != null"> and user_id = #{userId}</if>
@@ -64,6 +67,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="fileName != null  and fileName != ''"> and file_name like concat('%', #{fileName}, '%')</if>
             <if test="articleContent != null  and articleContent != ''"> and article_content = #{articleContent}</if>
             <if test="articleAttaUrl != null  and articleAttaUrl != ''"> and article_atta_url = #{articleAttaUrl}</if>
+            <if test="createBeginTime != null "> and create_time >= #{createBeginTime}</if>
+            <if test="createEndTime != null "> and create_time &lt; #{createEndTime}</if>
             <if test="status != null  and status != ''"> and status = #{status}</if>
         </where>
         GROUP BY user_id, article_type,status) ss left join t_biz_user u on ss.user_id=u.user_id

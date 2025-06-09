@@ -7,6 +7,7 @@ import com.github.binarywang.wxpay.exception.WxPayException;
 import com.wuming.article.domain.BizArticle;
 import com.wuming.article.domain.BizPrize;
 import com.wuming.article.dto.BizArticleCountDto;
+import com.wuming.article.dto.BizArticleQuery;
 import com.wuming.article.service.IBizArticleService;
 import com.wuming.article.service.IBizPrizeService;
 import com.wuming.article.service.IWxService;
@@ -66,7 +67,7 @@ public class WxController extends BaseController {
             return error("非用户本人,不能提现");
         }
 
-        BizArticle article = new BizArticleVo();
+        BizArticleQuery article = new BizArticleQuery();
         article.setUserId(pay.getUserId());
         List<BizArticleCountDto> countDtos = bizArticleService.selectBizArticleSumList(article);
         //已经转成功或者锁定中的金额

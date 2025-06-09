@@ -54,7 +54,7 @@ public class BizArticleServiceImpl implements IBizArticleService
      * @return 打卡
      */
     @Override
-    public List<BizArticleCountDto> selectBizArticleSumList(BizArticle bizArticle)
+    public List<BizArticleCountDto> selectBizArticleSumList(BizArticleQuery bizArticle)
     {
         return bizArticleMapper.selectBizArticleRankingList(bizArticle);
     }

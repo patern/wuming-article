@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -79,6 +80,13 @@ public class WxBizUserController extends BaseController {
         List<BizPrize> list = prizeService.selectBizPrizeList(bizPrize);
         return getDataTable(list);
     }
+    @PostMapping("/acceptLaw")
+    public AjaxResult acceptLaw() {
+       BizUser user = new BizUser();
+       user.setUserId(SecurityUtils.getLoginUser().getUser().getUserId());
+       user.setAcceptTime(new Date());
+       return toAjax(bizUserService.updateBizUser(user));
+    }
     /**
      * 根据微信openId获取用户信息
      */
@@ -113,7 +121,7 @@ public class WxBizUserController extends BaseController {
             // 生成token
             String token =  tokenService.createToken(loginUser);
             bizUser.setToken(token);
-            BizArticle article = new BizArticleVo();
+            BizArticleQuery article = new BizArticleQuery();
             article.setUserId(bizUser.getUserId());
             List<BizArticleCountDto> countDtos = bizArticleService.selectBizArticleSumList(article);
 

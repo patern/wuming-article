@@ -31,11 +31,11 @@
       <el-table-column label="联系方式" align="center" prop="telephone" />
       <el-table-column label="学校" align="center" prop="schoolName" />
       <el-table-column label="打卡次数" align="center" prop="allCount" />
+      <el-table-column label="打卡天数" align="center" prop="reportDay" />
       <el-table-column label="视频打卡次数" align="center" prop="videoCount" />
       <el-table-column label="语音打卡次数" align="center" prop="voiceCount" />
       <el-table-column label="文章打卡次数" align="center" prop="articleCount" />
       <el-table-column label="有效打卡次数" align="center" prop="activeCount" />
-      <el-table-column label="待上传次数" align="center" prop="inActiveCount" />
       <el-table-column label="删除打卡次数" align="center" prop="delCount" />
     </el-table>
 

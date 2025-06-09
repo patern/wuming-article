@@ -29,7 +29,7 @@ public interface IBizArticleService
      */
     public List<BizArticle> selectBizArticleList(BizArticleQuery bizArticle);
 
-    List<BizArticleCountDto> selectBizArticleSumList(BizArticle bizArticle);
+    List<BizArticleCountDto> selectBizArticleSumList(BizArticleQuery bizArticle);
 
     /**
      * 新增打卡

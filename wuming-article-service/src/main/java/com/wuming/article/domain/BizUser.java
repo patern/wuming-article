@@ -1,11 +1,13 @@
 package com.wuming.article.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.wuming.common.annotation.Excel;
 import com.wuming.common.core.domain.BaseEntity;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 打卡用户对象 t_biz_user
@@ -53,6 +55,9 @@ public class BizUser extends BaseEntity
     private String status;
 
     private String avatarUrl;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date acceptTime;
     /**
      * token信息
      */
@@ -170,6 +175,14 @@ public class BizUser extends BaseEntity
 
     public void setPrizeTotal(BigDecimal prizeTotal) {
         this.prizeTotal = prizeTotal;
+    }
+
+    public Date getAcceptTime() {
+        return acceptTime;
+    }
+
+    public void setAcceptTime(Date acceptTime) {
+        this.acceptTime = acceptTime;
     }
 
     @Override

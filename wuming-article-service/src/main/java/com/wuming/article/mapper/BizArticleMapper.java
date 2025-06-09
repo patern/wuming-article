@@ -35,7 +35,7 @@ public interface BizArticleMapper
      * @param bizArticle 打卡
      * @return 打卡集合
      */
-    public List<BizArticleCountDto> selectBizArticleRankingList(BizArticle bizArticle);
+    public List<BizArticleCountDto> selectBizArticleRankingList(BizArticleQuery bizArticle);
 
     /**
      * 新增打卡

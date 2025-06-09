@@ -312,53 +312,74 @@ public class WxBizArticleController extends BaseController {
     /**
      * 查询红包配置
      */
-    @GetMapping("/getPrizeConfig")
-    public AjaxResult getPrizeConfig() {
+//    @PostMapping("/getPrizeConfig")
+    public List<BigDecimal> getPrizeConfig() {
         BizArticleQuery query = new BizArticleQuery();
         query.setUserId(SecurityUtils.getLoginUser().getUser().getUserId());
         query.setStatus("0");
-//        query.setCreateBeginTime(DateUtil.beginOfDay(new Date()));
-//        query.setCreateBeginTime(DateUtil.beginOfDay(DateUtil.offsetDay(new Date(),1)));
         List<BizArticle> articles = bizArticleService.selectBizArticleList(query);
         //默认金额配置
         String configKey = configService.selectConfigByKey(CacheConstants.PRIZE_CONFIG_KEY);
         if (CollectionUtils.isNotEmpty(articles)) {
-            List<BizArticle> prizeArticle = articles.stream().filter(e ->
-                    e.getCreateTime().after(DateUtil.beginOfDay(new Date()))
-                            && e.getCreateTime().before(DateUtil.offsetDay(new Date(), 1)) &&
-                            null != e.getPrize() && e.getPrize().
-                            compareTo(new BigDecimal(0)) > 0).collect(Collectors.toList());
-            if (CollectionUtils.isNotEmpty(prizeArticle)) {
-                return error("今日已获得奖励!");
-            }
+//            List<BizArticle> prizeArticle = articles.stream().filter(e ->
+//                    e.getCreateTime().after(DateUtil.beginOfDay(new Date()))
+//                            && e.getCreateTime().before(DateUtil.offsetDay(new Date(), 1)) &&
+//                            null != e.getPrize() && e.getPrize().
+//                            compareTo(new BigDecimal(0)) > 0).collect(Collectors.toList());
+//            if (CollectionUtils.isNotEmpty(prizeArticle)) {
+//                throw new RuntimeException("今日已获得奖励!");
+//            }
             String level = configService.selectConfigByKey(CacheConstants.PRIZE_LEVEL_KEY);
             //不同金额的个数
             Map<String, String> levelMap = JSONObject.parseObject(level, Map.class);
 
             BigDecimal mBig = new BigDecimal(levelMap.get("M"));
+            BigDecimal lBig = new BigDecimal(levelMap.get("L"));
             List<BizArticle> lastMax = articles.stream().filter(e ->null != e.getPrize() && e.getPrize().
-                            compareTo(mBig) >= 0).collect(Collectors.toList());
-
+                            compareTo(mBig) >= 0 && e.getPrize().
+                    compareTo(lBig) < 0).collect(Collectors.toList());
             if(CollectionUtils.isNotEmpty(lastMax)){
+                //上次累计10天打卡获取奖金后的累计天数
                 BizArticle lastPrize = lastMax.get(0);
-                List<BizArticle> continueArticle = articles.stream().filter(e -> lastPrize.getCreateTime().before(e.getCreateTime())).collect(Collectors.toList());
-                if (continueArticle.size()>=10){
+                BizArticleQuery query1 = new BizArticleQuery();
+                query1.setUserId(SecurityUtils.getLoginUser().getUser().getUserId());
+                query1.setCreateBeginTime(lastPrize.getCreateTime());
+                query1.setStatus("0");
+                List<BizArticleCountDto> countDtos = bizArticleService.selectBizArticleSumList(query1);
+                if (CollectionUtils.isNotEmpty(countDtos) && countDtos.get(0).getReportDay()>=10){
                     configKey = configService.selectConfigByKey(CacheConstants.PRIZE_TEN_CONFIG_KEY);
                 }
             }else if (articles.size()>=10){
-                configKey = configService.selectConfigByKey(CacheConstants.PRIZE_TEN_CONFIG_KEY);
+                BizArticleQuery query1 = new BizArticleQuery();
+                query1.setUserId(SecurityUtils.getLoginUser().getUser().getUserId());
+                query1.setStatus("0");
+                List<BizArticleCountDto> countDtos = bizArticleService.selectBizArticleSumList(query1);
+                if (CollectionUtils.isNotEmpty(countDtos) && countDtos.get(0).getReportDay()>=10){
+                    configKey = configService.selectConfigByKey(CacheConstants.PRIZE_TEN_CONFIG_KEY);
+                }
             }
-            BigDecimal lBig = new BigDecimal(levelMap.get("L"));
+
             List<BizArticle> lastLMax = articles.stream().filter(e ->null != e.getPrize() && e.getPrize().
                     compareTo(lBig) >= 0).collect(Collectors.toList());
             if(CollectionUtils.isNotEmpty(lastLMax)){
+                //上次累计25天打卡获取奖金后的累计天数
                 BizArticle lastPrize = lastLMax.get(0);
-                List<BizArticle> continueArticle = articles.stream().filter(e -> lastPrize.getCreateTime().before(e.getCreateTime())).collect(Collectors.toList());
-                if (continueArticle.size()>=25){
+                BizArticleQuery query1 = new BizArticleQuery();
+                query1.setUserId(SecurityUtils.getLoginUser().getUser().getUserId());
+                query1.setCreateBeginTime(lastPrize.getCreateTime());
+                query1.setStatus("0");
+                List<BizArticleCountDto> countDtos = bizArticleService.selectBizArticleSumList(query1);
+                if (CollectionUtils.isNotEmpty(countDtos) && countDtos.get(0).getReportDay()>=25){
                     configKey = configService.selectConfigByKey(CacheConstants.PRIZE_25_CONFIG_KEY);
                 }
-            }else if (articles.size()>=25){
-                configKey = configService.selectConfigByKey(CacheConstants.PRIZE_25_CONFIG_KEY);
+            }else {
+                BizArticleQuery query1 = new BizArticleQuery();
+                query1.setUserId(SecurityUtils.getLoginUser().getUser().getUserId());
+                query1.setStatus("0");
+                List<BizArticleCountDto> countDtos = bizArticleService.selectBizArticleSumList(query1);
+                if (CollectionUtils.isNotEmpty(countDtos) && countDtos.get(0).getReportDay()>=25){
+                    configKey = configService.selectConfigByKey(CacheConstants.PRIZE_25_CONFIG_KEY);
+                }
             }
         }
         //不同金额的个数
@@ -377,15 +398,15 @@ public class WxBizArticleController extends BaseController {
                 }
             }
         }
-        redisCache.setCacheObject(CacheConstants.PRIZE_USER_PRICE_ALL + ":" + SecurityUtils.getLoginUser().getUser().getUserId(), prize);
-        return success(prize);
+//        redisCache.setCacheObject(CacheConstants.PRIZE_USER_PRICE_ALL + ":" + SecurityUtils.getLoginUser().getUser().getUserId(), prize);
+        return prize;
     }
 
     @PostMapping("/doPrize")
     public AjaxResult doPrize(@RequestBody UserPrizeVo prizeVo) {
-        if (null == prizeVo.getPrize()) {
-            return error("奖金金额不能为空");
-        }
+//        if (null == prizeVo.getPrize()) {
+//            return error("奖金金额不能为空");
+//        }
         if (null == prizeVo.getUserId()) {
             return error("用户不能为空");
         }
@@ -396,11 +417,12 @@ public class WxBizArticleController extends BaseController {
         if (!prizeVo.getUserId().equals(SecurityUtils.getLoginUser().getUser().getUserId())) {
             return error("用户不匹配");
         }
-        List<BigDecimal> prize = redisCache.getCacheObject(CacheConstants.PRIZE_USER_PRICE_ALL +
-                ":" + SecurityUtils.getLoginUser().getUser().getUserId());
-        if (!prize.contains(prizeVo.getPrize())) {
-            return error("金额非法");
-        }
+
+//        List<BigDecimal> prize = redisCache.getCacheObject(CacheConstants.PRIZE_USER_PRICE_ALL +
+//                ":" + SecurityUtils.getLoginUser().getUser().getUserId());
+//        if (!prize.contains(prizeVo.getPrize())) {
+//            return error("金额非法");
+//        }
         BizArticle article = bizArticleService.selectBizArticleByArticleId(prizeVo.getArticleId());
         if (null == article) {
             return error("未找到对应打卡记录");
@@ -419,11 +441,13 @@ public class WxBizArticleController extends BaseController {
                 return error("今日已获得奖励!");
             }
         }
+        prizeVo.setPrize(getPrizeConfig().get(0));
         //清理抽奖配置
-        redisCache.deleteObject(CacheConstants.PRIZE_USER_PRICE_ALL + ":" + SecurityUtils.getLoginUser().getUser().getUserId());
+//        redisCache.deleteObject(CacheConstants.PRIZE_USER_PRICE_ALL + ":" + SecurityUtils.getLoginUser().getUser().getUserId());
         BizArticle upArticle = new BizArticleVo();
         upArticle.setArticleId(article.getArticleId());
         upArticle.setPrize(prizeVo.getPrize());
-        return toAjax(bizArticleService.updateBizArticle(upArticle));
+        bizArticleService.updateBizArticle(upArticle);
+        return success(prizeVo.getPrize());
     }
 }

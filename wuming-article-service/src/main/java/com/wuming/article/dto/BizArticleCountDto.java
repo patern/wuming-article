@@ -8,6 +8,7 @@ public class BizArticleCountDto {
 
     private String articleType;
 
+    private Long reportDay;
     private Long allCount;
 
     private Long videoCount;
@@ -48,6 +49,14 @@ public class BizArticleCountDto {
 
     public void setArticleType(String articleType) {
         this.articleType = articleType;
+    }
+
+    public Long getReportDay() {
+        return reportDay;
+    }
+
+    public void setReportDay(Long reportDay) {
+        this.reportDay = reportDay;
     }
 
     public Long getAllCount() {
