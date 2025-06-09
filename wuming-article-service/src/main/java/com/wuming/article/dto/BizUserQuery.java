@@ -4,15 +4,16 @@ import com.wuming.article.domain.BizComment;
 import com.wuming.article.domain.BizUser;
 
 import java.util.List;
+import java.util.Set;
 
 public class BizUserQuery extends BizUser {
-    private List<Long> userIds;
+    private Set<Long> userIds;
 
-    public List<Long> getUserIds() {
+    public Set<Long> getUserIds() {
         return userIds;
     }
 
-    public void setUserIds(List<Long> userIds) {
+    public void setUserIds(Set<Long> userIds) {
         this.userIds = userIds;
     }
 }

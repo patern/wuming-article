@@ -1,10 +1,21 @@
 package com.wuming.web.controller.article;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
+import com.wuming.article.domain.BizUser;
 import com.wuming.article.dto.BizArticleCountDto;
 import com.wuming.article.dto.BizArticleQuery;
+import com.wuming.article.dto.BizCommentCountDto;
+import com.wuming.article.dto.BizUserQuery;
+import com.wuming.article.service.IBizUserService;
+import com.wuming.web.controller.front.vo.BizArticleVo;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.compress.utils.Lists;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +47,8 @@ public class BizArticleController extends BaseController
 {
     @Autowired
     private IBizArticleService bizArticleService;
+    @Autowired
+    private IBizUserService bizUserService;
 
     /**
      * 查询打卡列表
@@ -46,7 +59,26 @@ public class BizArticleController extends BaseController
     {
         startPage();
         List<BizArticle> list = bizArticleService.selectBizArticleList(bizArticle);
-        return getDataTable(list);
+        Set<Long> userIds = list.stream().map(BizArticle::getUserId).collect(Collectors.toSet());
+        BizUserQuery query1 = new BizUserQuery();
+        query1.setUserIds(userIds);
+//        query1.setStatus("0");
+        List<BizUser> users = bizUserService.selectBizUser(query1);
+        Map<Long, BizUser> userMap = users.stream().collect(Collectors.toMap(BizUser::getUserId, v -> v));
+
+        List<BizArticleVo> subComments = Lists.newArrayList();
+
+        for (BizArticle article : list) {
+            BizArticleVo vo = new BizArticleVo();
+            BeanUtils.copyProperties(article, vo);
+            BizUser u = userMap.get(article.getUserId());
+            if (null != u) {
+                vo.setUserName(u.getNickName());
+                vo.setSchoolName(u.getSchoolName());
+            }
+            subComments.add(vo);
+        }
+        return getDataTable(subComments);
     }
 
     /**

@@ -1,10 +1,10 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="打卡用户编码" prop="userId">
+      <el-form-item label="用户编码" prop="userId">
         <el-input
           v-model="queryParams.userId"
-          placeholder="请输入打卡用户编码"
+          placeholder="请输入用户编码"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -24,22 +24,6 @@
           clearable
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
-      <el-form-item label="打卡附件连接" prop="articleAttaUrl">
-        <el-input
-          v-model="queryParams.articleAttaUrl"
-          placeholder="请输入打卡附件连接"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="链接有效时间" prop="invalidDate">
-        <el-date-picker clearable
-          v-model="queryParams.invalidDate"
-          type="date"
-          value-format="yyyy-MM-dd"
-          placeholder="请选择链接有效时间">
-        </el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -93,22 +77,38 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="articleList" @selection-change="handleSelectionChange">
+    <el-table border stripe style="width: 100%"
+        row-class-name="custom-row-height"
+        v-loading="loading" :data="articleList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="文章编码" align="center" prop="articleId" />
-      <el-table-column label="打卡用户编码" align="center" prop="userId" />
-      <el-table-column label="打卡标题" align="center" prop="articleTitle" />
-      <el-table-column label="打卡类型" align="center" prop="articleType" />
-      <el-table-column label="打卡内容" align="center" prop="articleContent" />
-      <el-table-column label="文件名称" align="center" prop="fileName" />
-      <el-table-column label="打卡附件链接" align="center" prop="articleAttaUrl" />
-      <el-table-column label="链接有效时间" align="center" prop="invalidDate" width="180">
+      <el-table-column label="用户编码" width="80px" align="center" prop="userId" />
+      <el-table-column label="用户名称" width="80px" align="center" prop="userName" />
+      <el-table-column label="用户学校" width="150px" align="center" prop="schoolName" />
+      <el-table-column label="打卡标题" width="150px" align="center" prop="articleTitle" />
+      <el-table-column label="打卡类型" align="center" prop="articleType">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.article_type" :value="scope.row.articleType"/>
+        </template>
+      </el-table-column>
+      <el-table-column label="打卡内容" width="180px" align="center" prop="articleContent" />
+      <el-table-column label="文件名称" width="180px" align="center" prop="fileName">
+        <template slot-scope="scope">
+        <el-link type="primary"
+          @click="handlePreview(scope.row.articleAttaUrl)">{{scope.row.fileName}}</el-link>
+        </template>
+      </el-table-column>
+      <el-table-column label="有效时间" width="100px" align="center" prop="invalidDate">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.invalidDate, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="奖励金额" align="center" prop="prize" />
-      <el-table-column label="打卡状态" align="center" prop="status" />
+      <el-table-column label="打卡状态" align="center" prop="status">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.punch_status" :value="scope.row.status"/>
+        </template>
+      </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -137,7 +137,9 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
-
+    <s-modal :width="1000" :visible="previewVisible" :footer="null" showFullScreen title="预览" @cancel="handleCancel">
+        <img alt="example" style="width: 100%" :src="previewImage" />
+    </s-modal>
     <!-- 添加或修改文章对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
@@ -184,6 +186,7 @@ import { listArticle, getArticle, delArticle, addArticle, updateArticle } from "
 
 export default {
   name: "Article",
+  dicts: ['punch_status', 'article_type'],
   data() {
     return {
       // 遮罩层
@@ -192,6 +195,8 @@ export default {
       ids: [],
       // 非单个禁用
       single: true,
+      previewVisible: false,
+      previewImage: false,
       // 非多个禁用
       multiple: true,
       // 显示搜索条件
@@ -324,6 +329,16 @@ export default {
         }
       })
     },
+    handleCancel() {
+      this.previewVisible = false
+    },
+    async handlePreview(file) {
+      if (!file ) {
+        file.preview = await getBase64(file)
+      }
+      this.previewImage = file.url
+      this.previewVisible = true
+    },
     /** 删除按钮操作 */
     handleDelete(row) {
       const articleIds = row.articleId || this.ids
@@ -343,3 +358,9 @@ export default {
   }
 }
 </script>
+<style>
+.custom-row-height .cell {
+  height: 28px; /* 设置行高 */
+  line-height: 23px; /* 文本垂直居中 */
+}
+</style>

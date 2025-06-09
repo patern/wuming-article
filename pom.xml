@@ -260,14 +260,14 @@
     </dependencyManagement>
 
     <modules>
-        <module>wuming-admin</module>
-        <module>wuming-framework</module>
-        <module>wuming-article-service</module>
+        <module>wuming-common</module>
         <module>wuming-system</module>
+        <module>wuming-framework</module>
+        <module>wuming-oss</module>
+        <module>wuming-article-service</module>
+        <module>wuming-admin</module>
         <module>wuming-quartz</module>
         <module>wuming-generator</module>
-        <module>wuming-common</module>
-        <module>wuming-oss</module>
     </modules>
     <packaging>pom</packaging>
 

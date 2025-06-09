@@ -3,6 +3,7 @@ package com.wuming.web.controller.front;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSONObject;
+import com.google.common.collect.Sets;
 import com.wuming.article.domain.BizArticle;
 import com.wuming.article.domain.BizComment;
 import com.wuming.article.domain.BizUser;
@@ -89,10 +90,10 @@ public class WxBizArticleController extends BaseController {
         query.setStatus("0");
         List<BizCommentCountDto> comments = bizCommentService.selectBizCommentCount(query);
 
-        List<Long> userIds = list.stream().map(BizArticle::getUserId).collect(Collectors.toList());
+        Set<Long> userIds = list.stream().map(BizArticle::getUserId).collect(Collectors.toSet());
         BizUserQuery query1 = new BizUserQuery();
         query1.setUserIds(userIds);
-        query1.setStatus("0");
+//        query1.setStatus("0");
         List<BizUser> users = bizUserService.selectBizUser(query1);
         Map<Long, BizUser> userMap = users.stream().collect(Collectors.toMap(BizUser::getUserId, v -> v));
 
@@ -148,10 +149,10 @@ public class WxBizArticleController extends BaseController {
         query.setStatus("0");
         List<BizCommentCountDto> comments = bizCommentService.selectBizCommentCount(query);
 
-        List<Long> userIds = list.stream().map(BizArticle::getUserId).collect(Collectors.toList());
+        Set<Long> userIds = list.stream().map(BizArticle::getUserId).collect(Collectors.toSet());
         BizUserQuery query1 = new BizUserQuery();
         query1.setUserIds(userIds);
-        query1.setStatus("0");
+//        query1.setStatus("0");
         List<BizUser> users = bizUserService.selectBizUser(query1);
         Map<Long, BizUser> userMap = users.stream().collect(Collectors.toMap(BizUser::getUserId, v -> v));
 
@@ -208,7 +209,7 @@ public class WxBizArticleController extends BaseController {
         if (CollectionUtils.isEmpty(comments)) {
             return success(vo);
         }
-        List<Long> userIds = Lists.newArrayList();
+        Set<Long> userIds = Sets.newHashSet();
         userIds.add(article.getUserId());
         BizUserQuery query1 = new BizUserQuery();
         query1.setUserIds(userIds);
