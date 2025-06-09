@@ -13,6 +13,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="telephone"    column="telephone"    />
         <result property="idCard"    column="id_card"    />
         <result property="sex"    column="sex"    />
+        <result property="avatarUrl"    column="avatar_url"    />
         <result property="status"    column="status"    />
         <result property="createBy"    column="create_by"    />
         <result property="acceptTime"    column="accept_time"    />

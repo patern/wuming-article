@@ -166,6 +166,7 @@ public class WxBizArticleController extends BaseController {
                 vo.setUserName(u.getNickName());
                 vo.setSchoolName(u.getSchoolName());
             }
+            subComments.add(vo);
         }
         return getDataTable(subComments);
     }

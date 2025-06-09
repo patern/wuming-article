@@ -46,7 +46,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
     <select id="selectBizArticleRankingList" parameterType="BizArticleQuery" resultType="BizArticleCountDto">
         select
-        ss.user_id,
+        ss.user_id as userId,
         sum(articleCount) as allCount,
         sum(reportDay) as reportDay,
         sum(if(article_type='1',articleCount,0)) as videoCount,
