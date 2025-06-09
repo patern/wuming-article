@@ -1,7 +1,19 @@
 package com.wuming.web.controller.article;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
+
+import com.wuming.article.domain.BizArticle;
+import com.wuming.article.domain.BizUser;
+import com.wuming.article.dto.BizUserQuery;
+import com.wuming.article.service.IBizUserService;
+import com.wuming.web.controller.front.vo.BizArticleVo;
+import com.wuming.web.controller.front.vo.BizPrizeVo;
+import org.apache.commons.compress.utils.Lists;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +45,8 @@ public class BizPrizeController extends BaseController
 {
     @Autowired
     private IBizPrizeService bizPrizeService;
+    @Autowired
+    private IBizUserService bizUserService;
 
     /**
      * 查询用户提现列表
@@ -43,7 +57,27 @@ public class BizPrizeController extends BaseController
     {
         startPage();
         List<BizPrize> list = bizPrizeService.selectBizPrizeList(bizPrize);
-        return getDataTable(list);
+
+        Set<Long> userIds = list.stream().map(BizPrize::getUserId).collect(Collectors.toSet());
+        BizUserQuery query1 = new BizUserQuery();
+        query1.setUserIds(userIds);
+//        query1.setStatus("0");
+        List<BizUser> users = bizUserService.selectBizUser(query1);
+        Map<Long, BizUser> userMap = users.stream().collect(Collectors.toMap(BizUser::getUserId, v -> v));
+
+        List<BizPrizeVo> subComments = Lists.newArrayList();
+
+        for (BizPrize article : list) {
+            BizPrizeVo vo = new BizPrizeVo();
+            BeanUtils.copyProperties(article, vo);
+            BizUser u = userMap.get(article.getUserId());
+            if (null != u) {
+                vo.setUserName(u.getNickName());
+                vo.setSchoolName(u.getSchoolName());
+            }
+            subComments.add(vo);
+        }
+        return getDataTable(subComments);
     }
 
     /**
