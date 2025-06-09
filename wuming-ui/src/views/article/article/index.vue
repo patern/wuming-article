@@ -137,9 +137,6 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
-    <s-modal :width="1000" :visible="previewVisible" :footer="null" showFullScreen title="预览" @cancel="handleCancel">
-        <img alt="example" style="width: 100%" :src="previewImage" />
-    </s-modal>
     <!-- 添加或修改文章对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">

@@ -82,9 +82,11 @@ public class WxBizArticleController extends BaseController {
     public TableDataInfo list(BizArticleQuery bizArticle) {
         startPage();
         List<BizArticle> list = bizArticleService.selectBizArticleList(bizArticle);
+        TableDataInfo tableDataInfo = getDataTable(list);
         if (CollectionUtils.isEmpty(list)) {
             return getDataTable(list);
         }
+
         List<Long> ids = list.stream().map(BizArticle::getArticleId).collect(Collectors.toList());
         BizCommentQuery query = new BizCommentQuery();
         query.setArticleIds(ids);
@@ -129,7 +131,8 @@ public class WxBizArticleController extends BaseController {
             }
             subComments.add(vo);
         }
-        return getDataTable(subComments);
+        tableDataInfo.setRows(subComments);
+        return tableDataInfo;
     }
 
     /**
@@ -144,8 +147,9 @@ public class WxBizArticleController extends BaseController {
     public TableDataInfo rankingList(BizArticleQuery bizArticle) {
         startPage();
         List<BizArticleCountDto> list = bizArticleService.selectBizArticleSumList(bizArticle);
+        TableDataInfo tableDataInfo = getDataTable(list);
         if (CollectionUtils.isEmpty(list)) {
-            return getDataTable(list);
+            return tableDataInfo;
         }
 
         Set<Long> userIds = list.stream().map(BizArticleCountDto::getUserId).collect(Collectors.toSet());
@@ -168,7 +172,8 @@ public class WxBizArticleController extends BaseController {
             }
             subComments.add(vo);
         }
-        return getDataTable(subComments);
+        tableDataInfo.setRows(subComments);
+        return tableDataInfo;
     }
 
     /**

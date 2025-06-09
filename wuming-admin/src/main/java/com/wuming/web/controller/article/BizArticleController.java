@@ -59,6 +59,7 @@ public class BizArticleController extends BaseController
     {
         startPage();
         List<BizArticle> list = bizArticleService.selectBizArticleList(bizArticle);
+        TableDataInfo tableDataInfo = getDataTable(list);
         Set<Long> userIds = list.stream().map(BizArticle::getUserId).collect(Collectors.toSet());
         BizUserQuery query1 = new BizUserQuery();
         query1.setUserIds(userIds);
@@ -78,7 +79,8 @@ public class BizArticleController extends BaseController
             }
             subComments.add(vo);
         }
-        return getDataTable(subComments);
+        tableDataInfo.setRows(subComments);
+        return tableDataInfo;
     }
 
     /**
