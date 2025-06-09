@@ -1,7 +1,5 @@
 package com.wuming.web.controller.front;
 
-import com.aliyun.sts20150401.models.AssumeRoleResponseBody;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.binarywang.wxpay.constant.WxPayConstants;
 import com.wuming.article.domain.BizArticle;
 import com.wuming.article.domain.BizPrize;
@@ -20,7 +18,6 @@ import com.wuming.common.core.domain.entity.SysUser;
 import com.wuming.common.core.domain.model.LoginUser;
 import com.wuming.common.core.page.TableDataInfo;
 import com.wuming.common.enums.BusinessType;
-import com.wuming.common.oss.core.OssClient;
 import com.wuming.common.oss.factory.OssFactory;
 import com.wuming.common.utils.DateUtils;
 import com.wuming.common.utils.MessageUtils;
@@ -36,13 +33,9 @@ import org.apache.commons.compress.utils.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -116,6 +109,7 @@ public class WxBizUserController extends BaseController {
 
         BizPrize prize = new BizPrize();
         prize.setUserId(bizUser.getUserId());
+        prize.setStatusSet(Sets.newHashSet("SUCCESS","ACCEPTED","PROCESSING","WAIT_USER_CONFIRM","TRANSFERING","CANCELING"));
 //            prize.setStatus(WxPayConstants.TransformBillState.SUCCESS);
         List<BizPrize> prizes = prizeService.selectBizPrizeList(prize);
         if (CollectionUtils.isNotEmpty(countDtos)) {

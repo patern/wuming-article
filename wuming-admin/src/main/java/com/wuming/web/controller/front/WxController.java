@@ -18,6 +18,7 @@ import com.wuming.common.utils.SecurityUtils;
 import com.wuming.web.controller.front.vo.BizArticleVo;
 import com.wuming.web.controller.front.vo.PayVo;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.compress.utils.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +74,7 @@ public class WxController extends BaseController {
         //已经转成功或者锁定中的金额
         BizPrize prize = new BizPrize();
         prize.setUserId(pay.getUserId());
-//        prize.setStatus(WxPayConstants.TransformBillState.SUCCESS);
+        prize.setStatusSet(Sets.newHashSet("SUCCESS","ACCEPTED","PROCESSING","WAIT_USER_CONFIRM","TRANSFERING","CANCELING"));
         List<BizPrize> prizes = prizeService.selectBizPrizeList(prize);
         BigDecimal total = BigDecimal.ZERO;
         if (CollectionUtils.isNotEmpty(countDtos)) {

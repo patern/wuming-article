@@ -142,7 +142,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteBizArticleByArticleIds" parameterType="String">
-        delete from t_biz_article where article_id in 
+        update t_biz_article set status='2' where article_id in
         <foreach item="articleId" collection="array" open="(" separator="," close=")">
             #{articleId}
         </foreach>

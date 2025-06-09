@@ -1,6 +1,8 @@
 package com.wuming.article.service.impl;
 
 import java.util.List;
+
+import com.google.common.collect.Sets;
 import com.wuming.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,6 +51,8 @@ public class BizPrizeServiceImpl implements IBizPrizeService
      * @return
      */
     public List<BizPrize>  selectUnCompleteBill(BizPrize bizPrize){
+
+        bizPrize.setStatusSet(Sets.newHashSet("ACCEPTED","PROCESSING","WAIT_USER_CONFIRM","TRANSFERING","CANCELING"));
         return bizPrizeMapper.selectUnCompleteBill(bizPrize);
     }
 

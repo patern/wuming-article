@@ -25,13 +25,15 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="提现金额" prop="money">
-        <el-input
-          v-model="queryParams.money"
-          placeholder="请输入提现金额"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+     <el-form-item label="提现状态" prop="status">
+        <el-select v-model="queryParams.status" placeholder="请选择提现状态" clearable>
+          <el-option
+            v-for="dict in dict.type.transfer_status"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>

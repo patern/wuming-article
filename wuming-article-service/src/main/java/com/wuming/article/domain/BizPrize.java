@@ -1,6 +1,8 @@
 package com.wuming.article.domain;
 
 import java.math.BigDecimal;
+import java.util.Set;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.wuming.common.annotation.Excel;
@@ -38,6 +40,8 @@ public class BizPrize extends BaseEntity
     /** 转账状态 */
     @Excel(name = "转账状态")
     private String status;
+
+    private Set<String> statusSet;
 
     public void setPrizeId(Long prizeId) 
     {
@@ -97,6 +101,14 @@ public class BizPrize extends BaseEntity
     public String getStatus() 
     {
         return status;
+    }
+
+    public Set<String> getStatusSet() {
+        return statusSet;
+    }
+
+    public void setStatusSet(Set<String> statusSet) {
+        this.statusSet = statusSet;
     }
 
     @Override
