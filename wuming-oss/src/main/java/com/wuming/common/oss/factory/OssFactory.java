@@ -40,6 +40,10 @@ public class OssFactory {
         return instance(configKey);
     }
 
+    public OssProperties getProperties() {
+        return properties;
+    }
+
     /**
      * 根据类型获取实例
      */

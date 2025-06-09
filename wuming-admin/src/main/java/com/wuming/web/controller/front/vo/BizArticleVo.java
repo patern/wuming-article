@@ -8,11 +8,13 @@ import java.util.List;
 public class BizArticleVo extends BizArticle {
     private String userName;
     private String schoolName;
+    private String avatarUrl;
     private List<BizComment> comments;
     private List<BizComment> upVotes;
     private Long commentCounts;
     private Long upvoteCount;
-
+    private Long allCount;
+    private String screenUrl;
     private Boolean upvote;
 
     public String getUserName() {
@@ -29,6 +31,14 @@ public class BizArticleVo extends BizArticle {
 
     public void setSchoolName(String schoolName) {
         this.schoolName = schoolName;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 
     public List<BizComment> getComments() {
@@ -61,6 +71,22 @@ public class BizArticleVo extends BizArticle {
 
     public void setUpvoteCount(Long upvoteCount) {
         this.upvoteCount = upvoteCount;
+    }
+
+    public Long getAllCount() {
+        return allCount;
+    }
+
+    public void setAllCount(Long allCount) {
+        this.allCount = allCount;
+    }
+
+    public String getScreenUrl() {
+        return screenUrl;
+    }
+
+    public void setScreenUrl(String screenUrl) {
+        this.screenUrl = screenUrl;
     }
 
     public Boolean getUpvote() {

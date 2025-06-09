@@ -58,4 +58,11 @@ public interface BizPrizeMapper
      * @return 结果
      */
     public int deleteBizPrizeByPrizeIds(Long[] prizeIds);
+
+    /**
+     * 查询状态未完成的单据
+     * @param bizPrize
+     * @return
+     */
+    List<BizPrize> selectUnCompleteBill(BizPrize bizPrize);
 }

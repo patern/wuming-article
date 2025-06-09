@@ -58,4 +58,9 @@ public interface IBizPrizeService
      * @return 结果
      */
     public int deleteBizPrizeByPrizeId(Long prizeId);
+
+    /**
+     * 查询状态未完成的提现任务
+     */
+    public List<BizPrize>  selectUnCompleteBill(BizPrize bizPrize);
 }

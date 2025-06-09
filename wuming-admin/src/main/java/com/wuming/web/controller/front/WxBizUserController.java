@@ -1,5 +1,7 @@
 package com.wuming.web.controller.front;
 
+import com.aliyun.sts20150401.models.AssumeRoleResponseBody;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.binarywang.wxpay.constant.WxPayConstants;
 import com.wuming.article.domain.BizArticle;
 import com.wuming.article.domain.BizPrize;
@@ -18,6 +20,8 @@ import com.wuming.common.core.domain.entity.SysUser;
 import com.wuming.common.core.domain.model.LoginUser;
 import com.wuming.common.core.page.TableDataInfo;
 import com.wuming.common.enums.BusinessType;
+import com.wuming.common.oss.core.OssClient;
+import com.wuming.common.oss.factory.OssFactory;
 import com.wuming.common.utils.DateUtils;
 import com.wuming.common.utils.MessageUtils;
 import com.wuming.common.utils.SecurityUtils;
@@ -27,21 +31,19 @@ import com.wuming.framework.manager.AsyncManager;
 import com.wuming.framework.manager.factory.AsyncFactory;
 import com.wuming.framework.web.service.TokenService;
 import com.wuming.system.service.ISysUserService;
-import com.wuming.web.controller.front.vo.BizArticleVo;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.compress.utils.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 /**
  * 用户Controller
@@ -65,6 +67,8 @@ public class WxBizUserController extends BaseController {
     private IBizPrizeService prizeService;
     @Autowired
     private IWxService wxService;
+    @Autowired
+    private OssFactory ossFactory;
     @GetMapping("/article/list")
     public TableDataInfo list(BizArticleQuery bizArticle) {
         startPage();
@@ -86,6 +90,45 @@ public class WxBizUserController extends BaseController {
        user.setUserId(SecurityUtils.getLoginUser().getUser().getUserId());
        user.setAcceptTime(new Date());
        return toAjax(bizUserService.updateBizUser(user));
+    }
+    @GetMapping(value = "/getUserInfo")
+    public AjaxResult getInfo() {
+        BizUser bizUser;
+        String openId = null;
+        bizUser = bizUserService.selectBizUserByUserId(SecurityUtils.getLoginUser().getUser().getUserId());
+
+        return doWxLogin(bizUser, openId);
+    }
+
+    private AjaxResult doWxLogin(BizUser bizUser, String openId) {
+        SysUser sysUser = new SysUser();
+        sysUser.setUserId(bizUser.getUserId());
+        sysUser.setUserName(bizUser.getUserName());
+        AsyncManager.me().execute(AsyncFactory.recordLogininfor(openId, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
+        LoginUser loginUser = new LoginUser(bizUser.getUserId(), 100L, sysUser, Sets.newHashSet());
+        recordLoginInfo(bizUser.getUserId());
+        // 生成token
+        String token = tokenService.createToken(loginUser);
+        bizUser.setToken(token);
+        BizArticleQuery article = new BizArticleQuery();
+        article.setUserId(bizUser.getUserId());
+        List<BizArticleCountDto> countDtos = bizArticleService.selectBizArticleSumList(article);
+
+        BizPrize prize = new BizPrize();
+        prize.setUserId(bizUser.getUserId());
+//            prize.setStatus(WxPayConstants.TransformBillState.SUCCESS);
+        List<BizPrize> prizes = prizeService.selectBizPrizeList(prize);
+        if (CollectionUtils.isNotEmpty(countDtos)) {
+            bizUser.setPrizeTotal(countDtos.get(0).getTotalPrize());
+            if (CollectionUtils.isNotEmpty(prizes)) {
+                BigDecimal sum = prizes.stream().map(e -> e.getMoney()).reduce(BigDecimal.ZERO, BigDecimal::add);
+                if (null != bizUser.getPrizeTotal()) {
+                    BigDecimal left = bizUser.getPrizeTotal().subtract(sum);
+                    bizUser.setPrizeTotal(left);
+                }
+            }
+        }
+        return success(bizUser);
     }
     /**
      * 根据微信openId获取用户信息
@@ -111,35 +154,7 @@ public class WxBizUserController extends BaseController {
         if (CollectionUtils.isEmpty(users)) {
             return success();
         } else {
-            BizUser bizUser = users.get(0);
-            SysUser sysUser = new SysUser();
-            sysUser.setUserId(bizUser.getUserId());
-            sysUser.setUserName(bizUser.getUserName());
-            AsyncManager.me().execute(AsyncFactory.recordLogininfor(openId, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
-            LoginUser loginUser = new LoginUser(user.getUserId(), 100L, sysUser, Sets.newHashSet());
-            recordLoginInfo(user.getUserId());
-            // 生成token
-            String token =  tokenService.createToken(loginUser);
-            bizUser.setToken(token);
-            BizArticleQuery article = new BizArticleQuery();
-            article.setUserId(bizUser.getUserId());
-            List<BizArticleCountDto> countDtos = bizArticleService.selectBizArticleSumList(article);
-
-            BizPrize prize = new BizPrize();
-            prize.setUserId(bizUser.getUserId());
-//            prize.setStatus(WxPayConstants.TransformBillState.SUCCESS);
-            List<BizPrize> prizes = prizeService.selectBizPrizeList(prize);
-            if (CollectionUtils.isNotEmpty(countDtos)){
-                bizUser.setPrizeTotal(countDtos.get(0).getTotalPrize());
-                if (CollectionUtils.isNotEmpty(prizes)){
-                    BigDecimal sum = prizes.stream().map(e->e.getMoney()).reduce(BigDecimal.ZERO,BigDecimal::add);
-                    if (null!=bizUser.getPrizeTotal()){
-                        BigDecimal left = bizUser.getPrizeTotal().subtract(sum);
-                        bizUser.setPrizeTotal(left);
-                    }
-                }
-            }
-            return success(bizUser);
+          return doWxLogin(users.get(0),openId);
         }
     }
     public void recordLoginInfo(Long userId)
@@ -184,5 +199,4 @@ public class WxBizUserController extends BaseController {
     public AjaxResult edit(@RequestBody BizUser bizUser) {
         return toAjax(bizUserService.updateBizUser(bizUser));
     }
-
 }

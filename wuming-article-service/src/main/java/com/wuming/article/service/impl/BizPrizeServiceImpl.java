@@ -45,6 +45,14 @@ public class BizPrizeServiceImpl implements IBizPrizeService
     }
 
     /**
+     * 查询状态未完成的单据
+     * @return
+     */
+    public List<BizPrize>  selectUnCompleteBill(BizPrize bizPrize){
+        return bizPrizeMapper.selectUnCompleteBill(bizPrize);
+    }
+
+    /**
      * 新增用户提现
      * 
      * @param bizPrize 用户提现

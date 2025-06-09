@@ -83,7 +83,7 @@ public class WxServiceImpl implements IWxService {
         // 转账金额，单位为分
         request.setTransferAmount(money.multiply(new BigDecimal(100)).intValue());
         // 转账成功回调接口
-        //request.setNotifyUrl();
+        request.setNotifyUrl(wxPayFactory.getProperties().getNotifyUrl());
         // 用户收款时感知到的收款原因将根据转账场景自动展示默认内容
         List<TransferBillsRequest.TransferSceneReportInfo> transferSceneReportInfos = new ArrayList<>();
         //创建转账场景信息对象
@@ -118,6 +118,15 @@ public class WxServiceImpl implements IWxService {
         WxPayService wxPayService = wxPayFactory.instance();
         // 调用转账接口
         TransferBillsCancelResult result = wxPayService.getTransferService().transformBillsCancel(outBillNo);
+        BizPrize bizPrize = new BizPrize();
+        bizPrize.setPrizeNo(outBillNo);
+        List<BizPrize>  prizes = bizPrizeService.selectBizPrizeList(bizPrize);
+        if (CollectionUtils.isNotEmpty(prizes)){
+            BizPrize updatePrize = new BizPrize();
+            updatePrize.setPrizeNo(outBillNo);
+            updatePrize.setStatus(result.getState());
+            bizPrizeService.updateBizPrize(updatePrize);
+        }
         return result;
     }
 

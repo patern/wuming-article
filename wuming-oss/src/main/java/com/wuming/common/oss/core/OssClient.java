@@ -229,18 +229,18 @@ public class OssClient {
         }
     }
     private UploadResult getResult(String objectKey,String eTag){
-        GeneratePresignedUrlRequest req = new GeneratePresignedUrlRequest(properties.getBucketName(), objectKey);
-        req.setMethod(HttpMethod.GET); // 设置HTTP请求方法为GET，你也可以设置为PUT或其他HTTP方法，取决于你的需求。
-        Calendar ca = Calendar.getInstance();
-        ca.add(Calendar.DATE,30);
-        req.setExpiration(ca.getTime()); // 设置URL过期时间。
-        URL url = oss.generatePresignedUrl(req); // 生成URL。
+//        GeneratePresignedUrlRequest req = new GeneratePresignedUrlRequest(properties.getBucketName(), objectKey);
+//        req.setMethod(HttpMethod.GET); // 设置HTTP请求方法为GET，你也可以设置为PUT或其他HTTP方法，取决于你的需求。
+//        Calendar ca = Calendar.getInstance();
+//        ca.add(Calendar.DATE,30);
+//        req.setExpiration(ca.getTime()); // 设置URL过期时间。
+//        URL url = oss.generatePresignedUrl(req); // 生成URL。
 
         UploadResult uploadResult1 = new UploadResult();
-        uploadResult1.setUrl(url.toString());
+        uploadResult1.setUrl(getUrl()+SLASH+objectKey);
         uploadResult1.setFileName(objectKey);
         uploadResult1.seteTag(eTag);
-        uploadResult1.setInvalidDate(ca.getTime());
+//        uploadResult1.setInvalidDate(ca.getTime());
         return uploadResult1;
     }
 

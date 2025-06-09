@@ -26,6 +26,7 @@ import com.wuming.common.oss.entity.UploadResult;
 import com.wuming.common.oss.factory.OssFactory;
 import com.wuming.common.utils.SecurityUtils;
 import com.wuming.common.utils.StringUtils;
+import com.wuming.common.utils.file.FileUtils;
 import com.wuming.common.utils.poi.ExcelUtil;
 import com.wuming.system.service.ISysConfigService;
 import com.wuming.web.controller.front.vo.BizArticleVo;
@@ -109,6 +110,9 @@ public class WxBizArticleController extends BaseController {
                 vo.setUserName(u.getNickName());
                 vo.setSchoolName(u.getSchoolName());
             }
+            if ("1".equals(vo.getArticleType())){
+                vo.setScreenUrl(vo.getArticleAttaUrl()+"?x-oss-process=video/snapshot,t_1000,f_jpg,w_800,h_600,m_fast");
+            }
             List<BizCommentCountDto> comments1 = commentMap.get(article.getArticleId());
             if (CollectionUtils.isNotEmpty(comments1)) {
                 List<BizCommentCountDto> comments11 = comments1.stream().filter(e -> e.getCommentType().equals("1")).collect(Collectors.toList());
@@ -139,17 +143,12 @@ public class WxBizArticleController extends BaseController {
     @Anonymous
     public TableDataInfo rankingList(BizArticleQuery bizArticle) {
         startPage();
-        List<BizArticle> list = bizArticleService.selectBizArticleList(bizArticle);
+        List<BizArticleCountDto> list = bizArticleService.selectBizArticleSumList(bizArticle);
         if (CollectionUtils.isEmpty(list)) {
             return getDataTable(list);
         }
-        List<Long> ids = list.stream().map(BizArticle::getArticleId).collect(Collectors.toList());
-        BizCommentQuery query = new BizCommentQuery();
-        query.setArticleIds(ids);
-        query.setStatus("0");
-        List<BizCommentCountDto> comments = bizCommentService.selectBizCommentCount(query);
 
-        Set<Long> userIds = list.stream().map(BizArticle::getUserId).collect(Collectors.toSet());
+        Set<Long> userIds = list.stream().map(BizArticleCountDto::getUserId).collect(Collectors.toSet());
         BizUserQuery query1 = new BizUserQuery();
         query1.setUserIds(userIds);
 //        query1.setStatus("0");
@@ -158,31 +157,15 @@ public class WxBizArticleController extends BaseController {
 
         List<BizArticleVo> subComments = Lists.newArrayList();
 
-        Map<Long, List<BizCommentCountDto>> commentMap = comments.stream().collect(Collectors.groupingBy(BizCommentCountDto::getArticleId));
-
-        for (BizArticle article : list) {
+        for (BizArticleCountDto article : list) {
             BizArticleVo vo = new BizArticleVo();
             BeanUtils.copyProperties(article, vo);
             BizUser u = userMap.get(article.getUserId());
             if (null != u) {
+                vo.setAvatarUrl(u.getAvatarUrl());
                 vo.setUserName(u.getNickName());
                 vo.setSchoolName(u.getSchoolName());
             }
-            List<BizCommentCountDto> comments1 = commentMap.get(article.getArticleId());
-            if (CollectionUtils.isNotEmpty(comments1)) {
-                List<BizCommentCountDto> comments11 = comments1.stream().filter(e -> e.getCommentType().equals("1")).collect(Collectors.toList());
-                if (CollectionUtils.isNotEmpty(comments11)) {
-                    vo.setUpvoteCount(comments11.get(0).getCount());
-                }
-                List<BizCommentCountDto> comments12 = comments1.stream().filter(e -> e.getCommentType().equals("2")).collect(Collectors.toList());
-                if (CollectionUtils.isNotEmpty(comments12)) {
-                    vo.setCommentCounts(comments12.get(0).getCount());
-                }
-            } else {
-                vo.setUpvoteCount(0l);
-                vo.setCommentCounts(0l);
-            }
-            subComments.add(vo);
         }
         return getDataTable(subComments);
     }
@@ -277,13 +260,12 @@ public class WxBizArticleController extends BaseController {
      * 上次打卡附件
      */
     @Log(title = "打卡附件", businessType = BusinessType.INSERT)
-    @Anonymous
     @PostMapping("/uploadFile")
     public AjaxResult add(@RequestParam("file") MultipartFile multipartFile) {
         OssClient ossClient = ossFactory.instance();
         try {
             UploadResult result = ossClient.upload(multipartFile.getInputStream(),
-                    multipartFile.getOriginalFilename(), multipartFile.getSize(), "application/octet-stream");
+                    multipartFile.getOriginalFilename(), multipartFile.getSize(), FileUtils.getMimeType(multipartFile.getOriginalFilename()));
             return success(result);
         } catch (IOException e) {
             logger.error("上传失败", e);

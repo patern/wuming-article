@@ -34,7 +34,11 @@
             <groupId>com.wuming</groupId>
             <artifactId>wuming-common</artifactId>
         </dependency>
-
+        <!-- 通用工具-->
+        <dependency>
+            <groupId>com.wuming</groupId>
+            <artifactId>wuming-article-service</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
