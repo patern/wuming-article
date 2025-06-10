@@ -4,6 +4,7 @@ import java.util.List;
 import com.wuming.article.domain.BizComment;
 import com.wuming.article.dto.BizCommentCountDto;
 import com.wuming.article.dto.BizCommentQuery;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 打卡评论Mapper接口
@@ -75,5 +76,5 @@ public interface BizCommentMapper
      */
     public int deleteBizCommentByCommentIds(Long[] commentIds);
 
-    public int deleteBizCommentByUserId(Long userId);
+    public int deleteBizCommentByUserId(@Param("userId") Long userId, @Param("articleId")Long articleId);
 }

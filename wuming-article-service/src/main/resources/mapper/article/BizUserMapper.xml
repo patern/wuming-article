@@ -58,7 +58,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
         order by create_time desc
     </select>
-    
+
+    <select id="countUser" parameterType="Long" resultType="Long">
+        select count(1) from t_biz_user
+    </select>
+
     <select id="selectBizUserByUserId" parameterType="Long" resultMap="BizUserResult">
         <include refid="selectBizUserVo"/>
         where user_id = #{userId}

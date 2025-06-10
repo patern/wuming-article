@@ -86,10 +86,14 @@ public class LogAspect
     {
         try
         {
-            // 获取当前的用户
-            LoginUser loginUser = SecurityUtils.getLoginUser();
+            LoginUser loginUser = null;
+            try {
+                // 获取当前的用户
+                loginUser = SecurityUtils.getLoginUser();
+            } catch (Exception e1){
+                log.error("异常信息:{}", e1.getMessage());
+            }
 
-            // *========数据库日志=========*//
             SysOperLog operLog = new SysOperLog();
             operLog.setStatus(BusinessStatus.SUCCESS.ordinal());
             // 请求的地址

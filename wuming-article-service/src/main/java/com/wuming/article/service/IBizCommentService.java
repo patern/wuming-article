@@ -78,5 +78,5 @@ public interface IBizCommentService
      * 根据用户id删除评论或点赞
      * @param userId
      */
-    public int deleteByUserId(Long userId);
+    public int deleteByUserId(Long userId,Long articleId);
 }

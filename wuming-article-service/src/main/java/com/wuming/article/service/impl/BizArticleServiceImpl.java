@@ -108,4 +108,9 @@ public class BizArticleServiceImpl implements IBizArticleService
     {
         return bizArticleMapper.deleteBizArticleByArticleId(articleId);
     }
+
+    @Override
+    public Long countArticle() {
+        return bizArticleMapper.countArticle();
+    }
 }

@@ -45,4 +45,6 @@ public interface SysOperLogMapper
      * 清空操作日志
      */
     public void cleanOperLog();
+
+    Long countWxAcessCount();
 }

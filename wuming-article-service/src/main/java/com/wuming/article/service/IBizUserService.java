@@ -65,4 +65,9 @@ public interface IBizUserService
      */
     public int deleteBizUserByUserId(Long userId);
 
+    /**
+     * 查询微信小程序用户数量
+     * @return
+     */
+    Long countUser();
 }

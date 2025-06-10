@@ -80,6 +80,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where article_id = #{articleId}
     </select>
 
+    <select id="countArticle" parameterType="Long" resultType="Long">
+        select count(1) from t_biz_article
+    </select>
+
     <insert id="insertBizArticle" parameterType="BizArticle" useGeneratedKeys="true" keyProperty="articleId">
         insert into t_biz_article
         <trim prefix="(" suffix=")" suffixOverrides=",">

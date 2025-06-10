@@ -62,4 +62,6 @@ public interface IBizArticleService
      * @return 结果
      */
     public int deleteBizArticleByArticleId(Long articleId);
+
+    Long countArticle();
 }

@@ -73,4 +73,9 @@ public class SysOperLogServiceImpl implements ISysOperLogService
     {
         operLogMapper.cleanOperLog();
     }
+
+    @Override
+    public Long countWxAcessCount() {
+        return operLogMapper.countWxAcessCount();
+    }
 }

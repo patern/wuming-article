@@ -119,7 +119,7 @@ public class BizCommentServiceImpl implements IBizCommentService
     }
 
     @Override
-    public int deleteByUserId(Long userId) {
-        return bizCommentMapper.deleteBizCommentByUserId(userId);
+    public int deleteByUserId(Long userId,Long articleId) {
+        return bizCommentMapper.deleteBizCommentByUserId(userId,articleId);
     }
 }

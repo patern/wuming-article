@@ -61,4 +61,6 @@ public interface BizUserMapper
     public int deleteBizUserByUserIds(Long[] userIds);
 
     List<BizUser> selectBizUser(BizUserQuery bizUser);
+
+    Long countUser();
 }

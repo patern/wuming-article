@@ -87,29 +87,25 @@ public class WxBizUserController extends BaseController {
     @GetMapping(value = "/getUserInfo")
     public AjaxResult getInfo() {
         BizUser bizUser;
-        String openId = null;
         bizUser = bizUserService.selectBizUserByUserId(SecurityUtils.getLoginUser().getUser().getUserId());
-
-        return doWxLogin(bizUser, openId);
+        calUserMoney(bizUser);
+        return success(bizUser);
     }
 
-    private AjaxResult doWxLogin(BizUser bizUser, String openId) {
-        SysUser sysUser = new SysUser();
-        sysUser.setUserId(bizUser.getUserId());
-        sysUser.setUserName(bizUser.getUserName());
-        AsyncManager.me().execute(AsyncFactory.recordLogininfor(openId, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
-        LoginUser loginUser = new LoginUser(bizUser.getUserId(), 100L, sysUser, Sets.newHashSet());
-        recordLoginInfo(bizUser.getUserId());
-        // 生成token
-        String token = tokenService.createToken(loginUser);
-        bizUser.setToken(token);
+    private void calUserMoney(BizUser bizUser) {
         BizArticleQuery article = new BizArticleQuery();
         article.setUserId(bizUser.getUserId());
         List<BizArticleCountDto> countDtos = bizArticleService.selectBizArticleSumList(article);
 
         BizPrize prize = new BizPrize();
         prize.setUserId(bizUser.getUserId());
-        prize.setStatusSet(Sets.newHashSet("SUCCESS","ACCEPTED","PROCESSING","WAIT_USER_CONFIRM","TRANSFERING","CANCELING"));
+        prize.setStatusSet(Sets.newHashSet(
+                WxPayConstants.TransformBillState.SUCCESS,
+                WxPayConstants.TransformBillState.ACCEPTED,
+                WxPayConstants.TransformBillState.PROCESSING,
+                WxPayConstants.TransformBillState.WAIT_USER_CONFIRM,
+                WxPayConstants.TransformBillState.TRANSFERING,
+                WxPayConstants.TransformBillState.CANCELING));
 //            prize.setStatus(WxPayConstants.TransformBillState.SUCCESS);
         List<BizPrize> prizes = prizeService.selectBizPrizeList(prize);
         if (CollectionUtils.isNotEmpty(countDtos)) {
@@ -122,12 +118,27 @@ public class WxBizUserController extends BaseController {
                 }
             }
         }
+    }
+
+    private AjaxResult doWxLogin(BizUser bizUser, String openId) {
+        SysUser sysUser = new SysUser();
+        sysUser.setUserId(bizUser.getUserId());
+        sysUser.setUserName(bizUser.getUserName());
+        AsyncManager.me().execute(AsyncFactory.recordLogininfor(openId, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
+        LoginUser loginUser = new LoginUser(bizUser.getUserId(), 100L, sysUser, Sets.newHashSet());
+        recordLoginInfo(bizUser.getUserId());
+        // 生成token
+        String token = tokenService.createToken(loginUser);
+        bizUser.setToken(token);
+        //计算余额
+        calUserMoney(bizUser);
         return success(bizUser);
     }
     /**
      * 根据微信openId获取用户信息
      */
     @GetMapping(value = "/{openId}")
+    @Log(title = "微信用户登陆", businessType = BusinessType.OTHER)
     @Anonymous
     public AjaxResult getInfo(@PathVariable("openId") String jsCode) {
         if (StringUtils.isEmpty(jsCode)) {
@@ -146,7 +157,7 @@ public class WxBizUserController extends BaseController {
         user.setOpenId(openId);
         List<BizUser> users = bizUserService.selectBizUserList(user);
         if (CollectionUtils.isEmpty(users)) {
-            return success();
+            return error("用户未注册!");
         } else {
           return doWxLogin(users.get(0),openId);
         }

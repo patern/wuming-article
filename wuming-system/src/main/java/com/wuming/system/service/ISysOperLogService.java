@@ -45,4 +45,10 @@ public interface ISysOperLogService
      * 清空操作日志
      */
     public void cleanOperLog();
+
+    /**
+     * 微信小程序访问次数
+     * @return
+     */
+    Long countWxAcessCount();
 }

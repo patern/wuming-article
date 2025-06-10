@@ -106,4 +106,9 @@ public class BizUserServiceImpl implements IBizUserService
     {
         return bizUserMapper.deleteBizUserByUserId(userId);
     }
+
+    @Override
+    public Long countUser() {
+        return bizUserMapper.countUser();
+    }
 }

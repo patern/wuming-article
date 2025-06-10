@@ -128,7 +128,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteBizCommentByUserId" parameterType="String">
-        delete from t_biz_comment where user_id = #{userId}
+        delete from t_biz_comment where user_id = #{userId} and article_id=#{articleId}
     </delete>
 
 </mapper>

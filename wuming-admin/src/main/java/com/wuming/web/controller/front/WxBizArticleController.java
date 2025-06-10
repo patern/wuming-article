@@ -29,7 +29,9 @@ import com.wuming.common.utils.StringUtils;
 import com.wuming.common.utils.file.FileUtils;
 import com.wuming.common.utils.poi.ExcelUtil;
 import com.wuming.system.service.ISysConfigService;
+import com.wuming.system.service.ISysOperLogService;
 import com.wuming.web.controller.front.vo.BizArticleVo;
+import com.wuming.web.controller.front.vo.BizSumInfoVo;
 import com.wuming.web.controller.front.vo.UserPrizeVo;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
@@ -66,6 +68,8 @@ public class WxBizArticleController extends BaseController {
     private OssFactory ossFactory;
     @Autowired
     private ISysConfigService configService;
+    @Autowired
+    private ISysOperLogService operLogService;
 
     @Autowired
     private RedisCache redisCache;
@@ -237,14 +241,37 @@ public class WxBizArticleController extends BaseController {
     }
 
     /**
+     * 点赞或者评论
+     * userId，articleId，status 0:正常，1取消点赞，或者删除评论， commentType：评论类型（1点赞 2评论）
+     * 如果是删除评论或者点赞，则需要传递评论的id commentId，删除自己删除自己的评论，或者取消自己的点赞
+     */
+    @PostMapping(value = "/sumInfo")
+    @Anonymous
+    @Log(title = "统计信息", businessType = BusinessType.INSERT)
+    public AjaxResult sumInfo() {
+        Long userCount = bizUserService.countUser();
+        Long articleCount =  bizArticleService.countArticle();
+        Long accessCount = operLogService.countWxAcessCount();
+        BizSumInfoVo sumInfoVo = new BizSumInfoVo();
+        sumInfoVo.setAccessCount(accessCount);
+        sumInfoVo.setUserCount(userCount);
+        sumInfoVo.setArticleCount(articleCount);
+        return success(sumInfoVo);
+    }
+
+
+    /**
      * 取消点赞或者评论
      */
     @DeleteMapping(value = "/comment")
     @Log(title = "评论/点赞", businessType = BusinessType.DELETE)
     public AjaxResult cancelUpVote(@RequestBody BizComment comment) {
         if (null == comment.getCommentId()) {
+            if (null==comment.getArticleId()){
+                return error("取消点赞打卡不能为空");
+            }
             LoginUser loginUser = SecurityUtils.getLoginUser();
-            return toAjax(bizCommentService.deleteByUserId(loginUser.getUserId()));
+            return toAjax(bizCommentService.deleteByUserId(loginUser.getUserId(),comment.getArticleId()));
         } else {
             //删除评论，只能通过id删除
             return toAjax(bizCommentService.deleteBizCommentByCommentId(comment.getCommentId()));

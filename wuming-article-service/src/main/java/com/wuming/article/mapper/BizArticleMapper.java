@@ -68,4 +68,6 @@ public interface BizArticleMapper
      * @return 结果
      */
     public int deleteBizArticleByArticleIds(Long[] articleIds);
+
+    Long countArticle();
 }
