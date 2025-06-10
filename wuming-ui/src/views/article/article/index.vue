@@ -94,8 +94,24 @@
       <el-table-column label="打卡内容" width="180px" align="center" prop="articleContent" />
       <el-table-column label="文件名称" width="180px" align="center" prop="fileName">
         <template slot-scope="scope">
-        <el-link type="primary"
-          @click="handlePreview(scope.row.articleAttaUrl)">{{scope.row.fileName}}</el-link>
+          <i style="cursor: pointer;margin-right: 10px;margin-top: 3px;font-size: 25px;"
+            v-if="scope.row.articleType=='2'"
+            @click="play(scope.$index, scope.row)"
+            :class="icon == scope.row.articleId? 'el-icon-video-pause' : 'el-icon-video-play'"
+            :style="icon == scope.row.articleId ? 'color: red;' : ''">
+            <audio :id="scope.row.articleId">
+              <source :src="scope.row.articleAttaUrl" type="audio/mpeg" />
+            </audio>
+          </i>
+          <div v-if="scope.row.articleType=='1'">
+              <el-button type="success" plain @click="playVideo(scope.row.articleAttaUrl)" ref="btn"size="mini">
+                播放视频
+              </el-button>
+          </div>
+          <div v-if="scope.row.articleType=='3' && scope.row.articleAttaUrl">
+            <el-button type="success" plain @click="previewImg(scope.row.articleAttaUrl)" ref="btn" size="mini">{{scope.row.fileName}}</el-button>
+          </div>
+          <div v-else>{{scope.row.fileName}}</div>
         </template>
       </el-table-column>
       <el-table-column label="有效时间" width="100px" align="center" prop="invalidDate">
@@ -137,6 +153,16 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
+    <el-dialog title="视频预览" :visible.sync="dialogPlay" width="50%" height="50%" @close="closeDialog">
+       <video :src="videoUrl" controls autoplay class="video" ref="dialogVideo" width="100%"></video>
+    </el-dialog>
+    <el-dialog title="图片预览" :visible.sync="dialogimgs" height="80%" width="30%" @close="closeDialogimgs">
+      <el-carousel indicator-position="outside" :interval="2000">
+        <el-carousel-item v-for="(item, index) in imgUrls" :key="index">
+          <img ref="img" height="100%" width="100%" :src="item" />
+        </el-carousel-item>
+      </el-carousel>
+    </el-dialog>
     <!-- 添加或修改文章对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
@@ -189,7 +215,14 @@ export default {
       // 遮罩层
       loading: true,
       // 选中数组
+      // 图片轮播
+      dialogimgs: false,
+      imgUrls: [],
       ids: [],
+      icon: null,
+      audio: null,
+      videoUrl: null,
+      dialogPlay: null,
       // 非单个禁用
       single: true,
       previewVisible: false,
@@ -326,18 +359,37 @@ export default {
         }
       })
     },
-    handleCancel() {
-      this.previewVisible = false
+    closeDialog() {
+      this.videoUrl = "";
     },
-    async handlePreview(file) {
-      if (!file ) {
-        file.preview = await getBase64(file)
-      }
-      this.previewImage = file.url
-      this.previewVisible = true
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
+   play(index, row) {
+     if (this.audio && this.audio !== document.getElementById(row.articleId)) {
+       this.audio.pause();
+     }
+     this.audio = document.getElementById(row.articleId);
+     this.icon = row.articleId;
+     if (this.audio.paused) {
+       this.audio.play();
+       this.icon= row.articleId
+     } else {
+       this.icon = ""
+       this.audio.pause();
+     }
+   },
+   playVideo(url) {
+     this.dialogPlay = true;
+     this.videoUrl = url;
+   },
+   previewImg(imgs) {
+     console.log("--------",imgs)
+     this.imgUrls = [imgs];
+     this.dialogimgs = true;
+   },
+   closeDialogimgs() {
+    this.imgUrls = [];
+   },
+   /** 删除按钮操作 */
+   handleDelete(row) {
       const articleIds = row.articleId || this.ids
       this.$modal.confirm('是否确认删除打卡编号为"' + articleIds + '"的数据项？').then(function() {
         return delArticle(articleIds)
