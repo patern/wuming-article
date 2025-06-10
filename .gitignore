@@ -11,3 +11,4 @@ wuming_log/
 /wuming-article-service/target/classes
 /wuming-framework/target/
 /wuming-quartz/target/
+/wuming-ui/dist.zip

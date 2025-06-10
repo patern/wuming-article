@@ -44,6 +44,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collector;
@@ -305,7 +306,16 @@ public class WxBizArticleController extends BaseController {
             return error(e.getMessage());
         }
     }
-
+    /**
+     * 上次打卡附件
+     */
+    @Log(title = "获取打卡附件路径", businessType = BusinessType.UPDATE)
+    @PostMapping("/getFileUploadPath")
+    public AjaxResult getFileUploadPath(@RequestBody BizArticle bizArticle) {
+        OssClient ossClient = ossFactory.instance();
+        String result = ossClient.getOssUploadPath(bizArticle.getFileName(), 60l);
+        return success(result);
+    }
     /**
      * 修改打卡
      */

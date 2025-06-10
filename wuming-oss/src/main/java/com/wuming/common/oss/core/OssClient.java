@@ -352,6 +352,27 @@ public class OssClient {
     }
 
     /**
+     * 获取私有URL链接
+     *
+     * @param objectKey   对象KEY
+     * @param expired 链接授权到期时间
+     */
+    public String getOssUploadPath(String objectKey, Long expired) {
+        Date expiration = new Date(new Date().getTime() + expired * 1000L);
+
+        // 生成预签名URL。
+        GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(properties.getBucketName(),
+                objectKey, HttpMethod.PUT);
+        // 设置过期时间。
+        request.setExpiration(expiration);
+        // 通过HTTP PUT请求生成预签名URL。
+        URL signedUrl = oss.generatePresignedUrl(request);
+        // 打印预签名URL。
+        return signedUrl.toString();
+    }
+
+
+    /**
      * 上传 byte[] 数据到 Amazon S3，使用指定的后缀构造对象键。
      *
      * @param data   要上传的 byte[] 数据

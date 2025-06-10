@@ -137,7 +137,7 @@ public class WxBizUserController extends BaseController {
     /**
      * 根据微信openId获取用户信息
      */
-    @GetMapping(value = "/{openId}")
+    @GetMapping(value = "/login/{openId}")
     @Log(title = "微信用户登陆", businessType = BusinessType.OTHER)
     @Anonymous
     public AjaxResult getInfo(@PathVariable("openId") String jsCode) {
