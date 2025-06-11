@@ -37,7 +37,6 @@
           <img :src="codeUrl" @click="getCode" class="login-code-img"/>
         </div>
       </el-form-item>
-      <el-checkbox v-model="loginForm.rememberMe" style="margin:0px 0px 25px 0px;">记住密码</el-checkbox>
       <el-form-item style="width:100%;">
         <el-button
           :loading="loading"

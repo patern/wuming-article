@@ -20,8 +20,8 @@ public class ServerController
     @GetMapping()
     public AjaxResult getInfo() throws Exception
     {
-        Server server = new Server();
-        server.copyTo();
-        return AjaxResult.success(server);
+//        Server server = new Server();
+//        server.copyTo();
+        return AjaxResult.success();
     }
 }

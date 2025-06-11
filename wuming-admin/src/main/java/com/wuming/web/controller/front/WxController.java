@@ -2,9 +2,7 @@ package com.wuming.web.controller.front;
 
 import com.alibaba.fastjson2.JSON;
 import com.github.binarywang.wxpay.bean.notify.SignatureHeader;
-import com.github.binarywang.wxpay.constant.WxPayConstants;
 import com.github.binarywang.wxpay.exception.WxPayException;
-import com.wuming.article.domain.BizArticle;
 import com.wuming.article.domain.BizPrize;
 import com.wuming.article.dto.BizArticleCountDto;
 import com.wuming.article.dto.BizArticleQuery;
@@ -15,7 +13,6 @@ import com.wuming.common.annotation.Anonymous;
 import com.wuming.common.core.controller.BaseController;
 import com.wuming.common.core.domain.AjaxResult;
 import com.wuming.common.utils.SecurityUtils;
-import com.wuming.web.controller.front.vo.BizArticleVo;
 import com.wuming.web.controller.front.vo.PayVo;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Sets;
