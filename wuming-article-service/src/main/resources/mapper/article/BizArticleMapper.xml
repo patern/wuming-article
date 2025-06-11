@@ -73,7 +73,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
         GROUP BY user_id, article_type,status) ss left join t_biz_user u on ss.user_id=u.user_id
         GROUP BY ss.user_id
-        ORDER BY allCount
+        ORDER BY allCount desc
     </select>
     <select id="selectBizArticleByArticleId" parameterType="Long" resultMap="BizArticleResult">
         <include refid="selectBizArticleVo"/>
