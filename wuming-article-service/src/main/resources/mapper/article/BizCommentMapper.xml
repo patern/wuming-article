@@ -8,6 +8,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="commentId"    column="comment_id"    />
         <result property="articleId"    column="article_id"    />
         <result property="userId"    column="user_id"    />
+        <result property="userName"    column="nick_name"    />
         <result property="commentContent"    column="comment_content"    />
         <result property="commentType"    column="comment_type"    />
         <result property="status"    column="status"    />
@@ -19,35 +20,37 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectBizCommentVo">
-        select comment_id, article_id, user_id, comment_content, comment_type, status, create_by, create_time, update_by, update_time, remark from t_biz_comment
+        select m.comment_id, m.article_id, m.user_id, m.comment_content,
+        m.comment_type, m.status, m.create_by, m.create_time, m.update_by,
+        m.update_time, m.remark, u.nick_name from t_biz_comment m left join t_biz_user u on m.user_id = m.user_id
     </sql>
 
     <select id="selectBizCommentList" parameterType="BizComment" resultMap="BizCommentResult">
         <include refid="selectBizCommentVo"/>
         <where>
-            <if test="articleId != null "> and article_id = #{articleId}</if>
-            <if test="userId != null "> and user_id = #{userId}</if>
-            <if test="commentContent != null  and commentContent != ''"> and comment_content = #{commentContent}</if>
-            <if test="commentType != null  and commentType != ''"> and comment_type = #{commentType}</if>
-            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="articleId != null "> and m.article_id = #{articleId}</if>
+            <if test="userId != null "> and m.user_id = #{userId}</if>
+            <if test="commentContent != null  and commentContent != ''"> and m.comment_content = #{commentContent}</if>
+            <if test="commentType != null  and commentType != ''"> and m.comment_type = #{commentType}</if>
+            <if test="status != null  and status != ''"> and m.status = #{status}</if>
         </where>
-        order by create_time desc
+        order by m.create_time desc
     </select>
 
     <select id="selectBizComment" parameterType="BizComment" resultMap="BizCommentResult">
         <include refid="selectBizCommentVo"/>
         <where>
-            <if test="articleIds != null  and articleIds.size>0"> and article_id in
+            <if test="articleIds != null  and articleIds.size>0"> and m.article_id in
                 <foreach collection="articleIds" close=")" item="item" open="(" separator=",">
                     #{item}
                 </foreach>
             </if>
             <if test="userId != null "> and user_id = #{userId}</if>
-            <if test="commentContent != null  and commentContent != ''"> and comment_content = #{commentContent}</if>
-            <if test="commentType != null  and commentType != ''"> and comment_type = #{commentType}</if>
-            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="commentContent != null  and commentContent != ''"> and m.comment_content = #{commentContent}</if>
+            <if test="commentType != null  and commentType != ''"> and m.comment_type = #{commentType}</if>
+            <if test="status != null  and status != ''"> and m.status = #{status}</if>
         </where>
-        order by create_time desc
+        order by m.create_time desc
     </select>
 
     <select id="selectBizCommentCount" parameterType="BizComment" resultType="BizCommentCountDto">

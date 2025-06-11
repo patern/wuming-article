@@ -31,7 +31,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectBizUserVo"/>
         <where>  
             <if test="schoolName != null  and schoolName != ''"> and school_name like concat('%', #{schoolName}, '%')</if>
-            <if test="openId != null  and openId != ''"> and open_id like concat('%', #{openId}, '%')</if>
+            <if test="openId != null  and openId != ''"> and open_id =#{openId}</if>
             <if test="userName != null  and userName != ''"> and user_name like concat('%', #{userName}, '%')</if>
             <if test="nickName != null  and nickName != ''"> and nick_name like concat('%', #{nickName}, '%')</if>
             <if test="telephone != null  and telephone != ''"> and telephone = #{telephone}</if>
@@ -49,7 +49,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 </foreach>
             </if>
             <if test="schoolName != null  and schoolName != ''"> and school_name like concat('%', #{schoolName}, '%')</if>
-            <if test="openId != null  and openId != ''"> and open_id like concat('%', #{openId}, '%')</if>
+            <if test="openId != null  and openId != ''"> and open_id = #{openId} </if>
             <if test="userName != null  and userName != ''"> and user_name like concat('%', #{userName}, '%')</if>
             <if test="nickName != null  and nickName != ''"> and nick_name like concat('%', #{nickName}, '%')</if>
             <if test="telephone != null  and telephone != ''"> and telephone = #{telephone}</if>

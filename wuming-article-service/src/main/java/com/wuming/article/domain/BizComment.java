@@ -25,7 +25,9 @@ public class BizComment extends BaseEntity
     /** 用户ID */
     @Excel(name = "用户ID")
     private Long userId;
-
+    /** 用户ID */
+    @Excel(name = "用户名")
+    private String userName;
     /** 公告标题 */
     @Excel(name = "公告标题")
     private String commentContent;
@@ -68,7 +70,15 @@ public class BizComment extends BaseEntity
         return userId;
     }
 
-    public void setCommentContent(String commentContent) 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public void setCommentContent(String commentContent)
     {
         this.commentContent = commentContent;
     }
