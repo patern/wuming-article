@@ -96,7 +96,7 @@ public class WxBizArticleController extends BaseController {
         BizCommentQuery query = new BizCommentQuery();
         query.setArticleIds(ids);
         query.setStatus("0");
-        List<BizCommentCountDto> comments = bizCommentService.selectBizCommentCount(query);
+        List<BizComment> comments = bizCommentService.selectBizComment(query);
 
         Set<Long> userIds = list.stream().map(BizArticle::getUserId).collect(Collectors.toSet());
         BizUserQuery query1 = new BizUserQuery();
@@ -107,7 +107,7 @@ public class WxBizArticleController extends BaseController {
 
         List<BizArticleVo> subComments = Lists.newArrayList();
 
-        Map<Long, List<BizCommentCountDto>> commentMap = comments.stream().collect(Collectors.groupingBy(BizCommentCountDto::getArticleId));
+        Map<Long, List<BizComment>> commentMap = comments.stream().collect(Collectors.groupingBy(BizComment::getArticleId));
 
         for (BizArticle article : list) {
             BizArticleVo vo = new BizArticleVo();
@@ -116,19 +116,28 @@ public class WxBizArticleController extends BaseController {
             if (null != u) {
                 vo.setUserName(u.getNickName());
                 vo.setSchoolName(u.getSchoolName());
+                vo.setAvatarUrl(u.getAvatarUrl());
             }
-            if ("1".equals(vo.getArticleType())){
-                vo.setScreenUrl(vo.getArticleAttaUrl()+"?x-oss-process=video/snapshot,t_1000,f_jpg,w_800,h_600,m_fast");
+            if ("1".equals(vo.getArticleType())) {
+                vo.setScreenUrl(vo.getArticleAttaUrl() + "?x-oss-process=video/snapshot,t_1000,f_jpg,w_800,h_600,m_fast");
             }
-            List<BizCommentCountDto> comments1 = commentMap.get(article.getArticleId());
+            List<BizComment> comments1 = commentMap.get(article.getArticleId());
             if (CollectionUtils.isNotEmpty(comments1)) {
-                List<BizCommentCountDto> comments11 = comments1.stream().filter(e -> e.getCommentType().equals("1")).collect(Collectors.toList());
-                if (CollectionUtils.isNotEmpty(comments11)) {
-                    vo.setUpvoteCount(comments11.get(0).getCount());
+                try {
+                    vo.setUpvote(comments.stream().filter(e -> e.getCommentType().equals("1")
+                            && e.getUserId().equals(SecurityUtils.getLoginUser().getUser().getUserId())).collect(Collectors.toList()).size() > 0);
+                } catch (Exception e) {
+                    vo.setUpvote(false);
                 }
-                List<BizCommentCountDto> comments12 = comments1.stream().filter(e -> e.getCommentType().equals("2")).collect(Collectors.toList());
+                List<BizComment> comments11 = comments1.stream().filter(e -> e.getCommentType().equals("1")).collect(Collectors.toList());
+                if (CollectionUtils.isNotEmpty(comments11)) {
+                    vo.setComments(comments11);
+                    vo.setUpvoteCount(Long.valueOf(comments11.size()));
+                }
+                List<BizComment> comments12 = comments1.stream().filter(e -> e.getCommentType().equals("2")).collect(Collectors.toList());
                 if (CollectionUtils.isNotEmpty(comments12)) {
-                    vo.setCommentCounts(comments12.get(0).getCount());
+                    vo.setComments(comments12);
+                    vo.setCommentCounts(Long.valueOf(comments12.size()));
                 }
             } else {
                 vo.setUpvoteCount(0l);
@@ -251,7 +260,7 @@ public class WxBizArticleController extends BaseController {
     @Log(title = "统计信息", businessType = BusinessType.INSERT)
     public AjaxResult sumInfo() {
         Long userCount = bizUserService.countUser();
-        Long articleCount =  bizArticleService.countArticle();
+        Long articleCount = bizArticleService.countArticle();
         Long accessCount = operLogService.countWxAcessCount();
         BizSumInfoVo sumInfoVo = new BizSumInfoVo();
         sumInfoVo.setAccessCount(accessCount);
@@ -268,11 +277,11 @@ public class WxBizArticleController extends BaseController {
     @Log(title = "评论/点赞", businessType = BusinessType.DELETE)
     public AjaxResult cancelUpVote(@RequestBody BizComment comment) {
         if (null == comment.getCommentId()) {
-            if (null==comment.getArticleId()){
+            if (null == comment.getArticleId()) {
                 return error("取消点赞打卡不能为空");
             }
             LoginUser loginUser = SecurityUtils.getLoginUser();
-            return toAjax(bizCommentService.deleteByUserId(loginUser.getUserId(),comment.getArticleId()));
+            return toAjax(bizCommentService.deleteByUserId(loginUser.getUserId(), comment.getArticleId()));
         } else {
             //删除评论，只能通过id删除
             return toAjax(bizCommentService.deleteBizCommentByCommentId(comment.getCommentId()));
@@ -306,6 +315,7 @@ public class WxBizArticleController extends BaseController {
             return error(e.getMessage());
         }
     }
+
     /**
      * 上次打卡附件
      */
@@ -316,6 +326,7 @@ public class WxBizArticleController extends BaseController {
         String result = ossClient.getOssUploadPath(bizArticle.getFileName(), 60l);
         return success(result);
     }
+
     /**
      * 修改打卡
      */
@@ -360,10 +371,10 @@ public class WxBizArticleController extends BaseController {
 
             BigDecimal mBig = new BigDecimal(levelMap.get("M"));
             BigDecimal lBig = new BigDecimal(levelMap.get("L"));
-            List<BizArticle> lastMax = articles.stream().filter(e ->null != e.getPrize() && e.getPrize().
-                            compareTo(mBig) >= 0 && e.getPrize().
+            List<BizArticle> lastMax = articles.stream().filter(e -> null != e.getPrize() && e.getPrize().
+                    compareTo(mBig) >= 0 && e.getPrize().
                     compareTo(lBig) < 0).collect(Collectors.toList());
-            if(CollectionUtils.isNotEmpty(lastMax)){
+            if (CollectionUtils.isNotEmpty(lastMax)) {
                 //上次累计10天打卡获取奖金后的累计天数
                 BizArticle lastPrize = lastMax.get(0);
                 BizArticleQuery query1 = new BizArticleQuery();
@@ -371,22 +382,22 @@ public class WxBizArticleController extends BaseController {
                 query1.setCreateBeginTime(lastPrize.getCreateTime());
                 query1.setStatus("0");
                 List<BizArticleCountDto> countDtos = bizArticleService.selectBizArticleSumList(query1);
-                if (CollectionUtils.isNotEmpty(countDtos) && countDtos.get(0).getReportDay()>=10){
+                if (CollectionUtils.isNotEmpty(countDtos) && countDtos.get(0).getReportDay() >= 10) {
                     configKey = configService.selectConfigByKey(CacheConstants.PRIZE_TEN_CONFIG_KEY);
                 }
-            }else if (articles.size()>=10){
+            } else if (articles.size() >= 10) {
                 BizArticleQuery query1 = new BizArticleQuery();
                 query1.setUserId(SecurityUtils.getLoginUser().getUser().getUserId());
                 query1.setStatus("0");
                 List<BizArticleCountDto> countDtos = bizArticleService.selectBizArticleSumList(query1);
-                if (CollectionUtils.isNotEmpty(countDtos) && countDtos.get(0).getReportDay()>=10){
+                if (CollectionUtils.isNotEmpty(countDtos) && countDtos.get(0).getReportDay() >= 10) {
                     configKey = configService.selectConfigByKey(CacheConstants.PRIZE_TEN_CONFIG_KEY);
                 }
             }
 
-            List<BizArticle> lastLMax = articles.stream().filter(e ->null != e.getPrize() && e.getPrize().
+            List<BizArticle> lastLMax = articles.stream().filter(e -> null != e.getPrize() && e.getPrize().
                     compareTo(lBig) >= 0).collect(Collectors.toList());
-            if(CollectionUtils.isNotEmpty(lastLMax)){
+            if (CollectionUtils.isNotEmpty(lastLMax)) {
                 //上次累计25天打卡获取奖金后的累计天数
                 BizArticle lastPrize = lastLMax.get(0);
                 BizArticleQuery query1 = new BizArticleQuery();
@@ -394,15 +405,15 @@ public class WxBizArticleController extends BaseController {
                 query1.setCreateBeginTime(lastPrize.getCreateTime());
                 query1.setStatus("0");
                 List<BizArticleCountDto> countDtos = bizArticleService.selectBizArticleSumList(query1);
-                if (CollectionUtils.isNotEmpty(countDtos) && countDtos.get(0).getReportDay()>=25){
+                if (CollectionUtils.isNotEmpty(countDtos) && countDtos.get(0).getReportDay() >= 25) {
                     configKey = configService.selectConfigByKey(CacheConstants.PRIZE_25_CONFIG_KEY);
                 }
-            }else {
+            } else {
                 BizArticleQuery query1 = new BizArticleQuery();
                 query1.setUserId(SecurityUtils.getLoginUser().getUser().getUserId());
                 query1.setStatus("0");
                 List<BizArticleCountDto> countDtos = bizArticleService.selectBizArticleSumList(query1);
-                if (CollectionUtils.isNotEmpty(countDtos) && countDtos.get(0).getReportDay()>=25){
+                if (CollectionUtils.isNotEmpty(countDtos) && countDtos.get(0).getReportDay() >= 25) {
                     configKey = configService.selectConfigByKey(CacheConstants.PRIZE_25_CONFIG_KEY);
                 }
             }

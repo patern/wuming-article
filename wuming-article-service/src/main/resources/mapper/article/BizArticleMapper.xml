@@ -56,6 +56,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         sum(if(ss.status='1',articleCount,0)) as inActiveCount,
         sum(ss.prize) as totalPrize,
         sum(if(ss.status='2',articleCount,0)) as delCount,
+        u.avatar_url as avatarUrl,
         u.user_name as userName,u.nick_name as nickName,u.telephone,u.school_name as schoolName
         from (
         SELECT user_id,count(DISTINCT DATE_FORMAT(create_time,'%Y,%M,%D')) as reportDay,

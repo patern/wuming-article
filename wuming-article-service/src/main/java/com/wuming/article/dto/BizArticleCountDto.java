@@ -35,6 +35,8 @@ public class BizArticleCountDto {
 
     private BigDecimal totalPrize;
 
+    private String avatarUrl;
+
     public Long getUserId() {
         return userId;
     }
@@ -161,5 +163,13 @@ public class BizArticleCountDto {
 
     public void setTotalPrize(BigDecimal totalPrize) {
         this.totalPrize = totalPrize;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 }
