@@ -13,8 +13,10 @@ import com.wuming.common.oss.enums.AccessPolicyType;
 import com.wuming.common.oss.exception.OssException;
 import com.wuming.common.oss.properties.OssProperties;
 import com.wuming.common.utils.DateUtils;
+import com.wuming.common.utils.SecurityUtils;
 import com.wuming.common.utils.file.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.core.parameters.P;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.ResponseInputStream;
@@ -166,7 +168,7 @@ public class OssClient {
 //            uploadResult1.setUrl(getUrl() + "/" + key);
 //            uploadResult1.setFilename(key);
 //            uploadResult1.seteTag(eTag);
-            return getResult(key,eTag);
+            return getResult(key, eTag);
         } catch (Exception e) {
             // 捕获异常并抛出自定义异常
             throw new OssException("上传文件失败，请检查配置信息:[" + e.getMessage() + "]");
@@ -223,12 +225,13 @@ public class OssClient {
 //            uploadResult1.setFilename(key);
 //            uploadResult1.seteTag(eTag);
             // 提取上传结果中的 ETag，并构建一个自定义的 UploadResult 对象
-            return getResult(key,eTag);
+            return getResult(key, eTag);
         } catch (Exception e) {
             throw new OssException("上传文件失败，请检查配置信息:[" + e.getMessage() + "]");
         }
     }
-    private UploadResult getResult(String objectKey,String eTag){
+
+    private UploadResult getResult(String objectKey, String eTag) {
 //        GeneratePresignedUrlRequest req = new GeneratePresignedUrlRequest(properties.getBucketName(), objectKey);
 //        req.setMethod(HttpMethod.GET); // 设置HTTP请求方法为GET，你也可以设置为PUT或其他HTTP方法，取决于你的需求。
 //        Calendar ca = Calendar.getInstance();
@@ -237,7 +240,7 @@ public class OssClient {
 //        URL url = oss.generatePresignedUrl(req); // 生成URL。
 
         UploadResult uploadResult1 = new UploadResult();
-        uploadResult1.setUrl(getUrl()+SLASH+objectKey);
+        uploadResult1.setUrl(getUrl() + SLASH + objectKey);
         uploadResult1.setFileName(objectKey);
         uploadResult1.seteTag(eTag);
 //        uploadResult1.setInvalidDate(ca.getTime());
@@ -354,12 +357,15 @@ public class OssClient {
     /**
      * 获取私有URL链接
      *
-     * @param objectKey   对象KEY
-     * @param expired 链接授权到期时间
+     * @param objectKey 对象KEY
+     * @param expired   链接授权到期时间
      */
     public String getOssUploadPath(String objectKey, Long expired) {
         Date expiration = new Date(new Date().getTime() + expired * 1000L);
-
+//        if (StringUtils.isBlank(objectKey)){
+        objectKey = SecurityUtils.getLoginUser().getUser().getUserId() +
+                "_" + Calendar.getInstance().getTimeInMillis() + "." + FileUtils.getSuffix(objectKey);
+//        }
         // 生成预签名URL。
         GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(properties.getBucketName(),
                 objectKey, HttpMethod.PUT);

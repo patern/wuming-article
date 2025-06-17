@@ -1,6 +1,7 @@
 /Users/patern/Documents/git/wuming-article/wuming-quartz/src/main/java/com/wuming/quartz/util/QuartzJobExecution.java
 /Users/patern/Documents/git/wuming-article/wuming-quartz/src/main/java/com/wuming/quartz/util/ScheduleUtils.java
 /Users/patern/Documents/git/wuming-article/wuming-quartz/src/main/java/com/wuming/quartz/mapper/SysJobMapper.java
+/Users/patern/Documents/git/wuming-article/wuming-quartz/src/main/java/com/wuming/quartz/task/WxTransferTask.java
 /Users/patern/Documents/git/wuming-article/wuming-quartz/src/main/java/com/wuming/quartz/util/QuartzDisallowConcurrentExecution.java
 /Users/patern/Documents/git/wuming-article/wuming-quartz/src/main/java/com/wuming/quartz/domain/SysJob.java
 /Users/patern/Documents/git/wuming-article/wuming-quartz/src/main/java/com/wuming/quartz/service/ISysJobService.java

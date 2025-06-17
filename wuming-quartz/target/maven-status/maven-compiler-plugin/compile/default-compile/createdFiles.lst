@@ -11,6 +11,7 @@ com/wuming/quartz/controller/SysJobLogController.class
 com/wuming/quartz/util/JobInvokeUtil.class
 com/wuming/quartz/mapper/SysJobLogMapper.class
 com/wuming/quartz/service/ISysJobLogService.class
+com/wuming/quartz/task/WxTransferTask.class
 com/wuming/quartz/service/ISysJobService.class
 com/wuming/quartz/domain/SysJob.class
 com/wuming/quartz/task/RyTask.class

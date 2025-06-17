@@ -126,6 +126,7 @@ public class WxController extends BaseController {
      * @return 转账回调通知结果字符串
      */
     @RequestMapping("/payTransferNotify")
+    @Anonymous
     public String payTransferNotify(HttpServletRequest request) {
         loggerPay.info("回调通知payNotify开始");
 

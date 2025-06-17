@@ -12,3 +12,4 @@ wuming_log/
 /wuming-framework/target/
 /wuming-quartz/target/
 /wuming-ui/dist.zip
+/wuming-admin/src/main/resources/cert/

@@ -324,7 +324,7 @@ public class WxBizArticleController extends BaseController {
     public AjaxResult getFileUploadPath(@RequestBody BizArticle bizArticle) {
         OssClient ossClient = ossFactory.instance();
         String result = ossClient.getOssUploadPath(bizArticle.getFileName(), 60l);
-        return success(result);
+        return AjaxResult.success("成功",result);
     }
 
     /**
