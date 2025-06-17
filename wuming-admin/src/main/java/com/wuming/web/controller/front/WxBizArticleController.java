@@ -273,7 +273,7 @@ public class WxBizArticleController extends BaseController {
     /**
      * 取消点赞或者评论
      */
-    @DeleteMapping(value = "/comment")
+    @PostMapping(value = "/comment/delete")
     @Log(title = "评论/点赞", businessType = BusinessType.DELETE)
     public AjaxResult cancelUpVote(@RequestBody BizComment comment) {
         if (null == comment.getCommentId()) {
