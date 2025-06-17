@@ -1,6 +1,7 @@
 package com.wuming.article.domain;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -42,6 +43,10 @@ public class BizPrize extends BaseEntity
     private String status;
 
     private Set<String> statusSet;
+
+    private Date createDateBegin;
+
+    private Date createDateEnd;
 
     public void setPrizeId(Long prizeId) 
     {
@@ -109,6 +114,22 @@ public class BizPrize extends BaseEntity
 
     public void setStatusSet(Set<String> statusSet) {
         this.statusSet = statusSet;
+    }
+
+    public Date getCreateDateBegin() {
+        return createDateBegin;
+    }
+
+    public void setCreateDateBegin(Date createDateBegin) {
+        this.createDateBegin = createDateBegin;
+    }
+
+    public Date getCreateDateEnd() {
+        return createDateEnd;
+    }
+
+    public void setCreateDateEnd(Date createDateEnd) {
+        this.createDateEnd = createDateEnd;
     }
 
     @Override

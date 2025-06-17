@@ -1,5 +1,6 @@
 package com.wuming.article.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.github.binarywang.wxpay.bean.notify.SignatureHeader;
@@ -16,6 +17,7 @@ import com.wuming.article.service.IBizUserService;
 import com.wuming.article.service.IWxService;
 import com.wuming.common.utils.http.HttpUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.compress.utils.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -40,6 +43,8 @@ public class WxServiceImpl implements IWxService {
     private WxPayFactory wxPayFactory;
     @Autowired
     private IBizUserService bizUserService;
+    @Autowired
+    private IBizPrizeService prizeService;
     @Autowired
     private IBizPrizeService bizPrizeService;
     private final ReentrantLock transferNotifyLock = new ReentrantLock();
@@ -65,7 +70,29 @@ public class WxServiceImpl implements IWxService {
         if (null==user){
             throw new RuntimeException("用户未找到");
         }
+
         WxPayService wxPayService = wxPayFactory.instance();
+
+        //已经转成功或者锁定中的金额
+        BizPrize prizeQ = new BizPrize();
+        prizeQ.setUserId(userId);
+        prizeQ.setCreateDateBegin(DateUtil.beginOfDay(new Date()));
+        prizeQ.setCreateDateEnd(DateUtil.beginOfDay(DateUtil.offsetDay(new Date(), 1)));
+        prizeQ.setStatusSet(Sets.newHashSet(
+                WxPayConstants.TransformBillState.SUCCESS,
+                WxPayConstants.TransformBillState.ACCEPTED,
+                WxPayConstants.TransformBillState.PROCESSING,
+                WxPayConstants.TransformBillState.WAIT_USER_CONFIRM,
+                WxPayConstants.TransformBillState.TRANSFERING,
+                WxPayConstants.TransformBillState.CANCELING)
+        );
+        List<BizPrize> prizeList = prizeService.selectBizPrizeList(prizeQ);
+        if (CollectionUtils.isNotEmpty(prizeList) && prizeList.size()>=wxPayFactory.getProperties().getMaxPayTimes()){
+            throw new RuntimeException("今日已经超过提现次数，请明天再来！");
+        }
+        if (null == money || money.compareTo(wxPayFactory.getProperties().getMinMoney()) <= 0) {
+            throw new RuntimeException("提现金额不能少于"+wxPayFactory.getProperties().getMinMoney());
+        }
         // 创建请求参数
         TransferBillsRequest request = new TransferBillsRequest();
         // 设置商户关联的appid，微信公众号、小程序id

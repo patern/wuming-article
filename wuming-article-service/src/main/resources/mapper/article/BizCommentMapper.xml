@@ -22,7 +22,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <sql id="selectBizCommentVo">
         select m.comment_id, m.article_id, m.user_id, m.comment_content,
         m.comment_type, m.status, m.create_by, m.create_time, m.update_by,
-        m.update_time, m.remark, u.nick_name from t_biz_comment m left join t_biz_user u on m.user_id = m.user_id
+        m.update_time, m.remark, u.nick_name from t_biz_comment m left join t_biz_user u on m.user_id = u.user_id
     </sql>
 
     <select id="selectBizCommentList" parameterType="BizComment" resultMap="BizCommentResult">
@@ -33,6 +33,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="commentContent != null  and commentContent != ''"> and m.comment_content = #{commentContent}</if>
             <if test="commentType != null  and commentType != ''"> and m.comment_type = #{commentType}</if>
             <if test="status != null  and status != ''"> and m.status = #{status}</if>
+            <if test="articleIds != null  and articleIds.size>0"> and m.article_id in
+                <foreach collection="articleIds" close=")" item="item" open="(" separator=",">
+                    #{item}
+                </foreach>
+            </if>
         </where>
         order by m.create_time desc
     </select>

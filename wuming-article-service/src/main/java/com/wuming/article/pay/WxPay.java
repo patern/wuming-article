@@ -1,5 +1,7 @@
 package com.wuming.article.pay;
 
+import java.math.BigDecimal;
+
 public class WxPay {
     /**
      * 设置微信公众号或者小程序等的appid
@@ -48,6 +50,8 @@ public class WxPay {
     private String appSecret;
 
     private String refundNotify;
+    private Integer maxPayTimes;
+    private BigDecimal minMoney;
     /**
      * 通知模版,参考：shop.properties
      */
@@ -179,5 +183,21 @@ public class WxPay {
 
     public void setTemplateIds(String[] templateIds) {
         this.templateIds = templateIds;
+    }
+
+    public Integer getMaxPayTimes() {
+        return maxPayTimes;
+    }
+
+    public void setMaxPayTimes(Integer maxPayTimes) {
+        this.maxPayTimes = maxPayTimes;
+    }
+
+    public BigDecimal getMinMoney() {
+        return minMoney;
+    }
+
+    public void setMinMoney(BigDecimal minMoney) {
+        this.minMoney = minMoney;
     }
 }
