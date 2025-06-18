@@ -135,8 +135,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </foreach>
     </delete>
 
-    <delete id="deleteBizCommentByUserId" parameterType="String">
-        delete from t_biz_comment where user_id = #{userId} and article_id=#{articleId}
+    <delete id="deleteBizCommentByUserId" parameterType="Map">
+        delete from t_biz_comment where comment_type='1' and user_id = #{userId} and article_id=#{articleId}
     </delete>
 
 </mapper>

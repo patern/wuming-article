@@ -42,6 +42,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -203,10 +204,10 @@ public class WxBizArticleController extends BaseController {
         if (null == article) {
             return success(null);
         }
-        BizComment query = new BizComment();
+        BizCommentQuery query = new BizCommentQuery();
         query.setArticleId(articleId);
         query.setStatus("0");
-        List<BizComment> comments = bizCommentService.selectBizCommentList(query);
+        List<BizComment> comments = bizCommentService.selectBizComment(query);
         BizArticleVo vo = new BizArticleVo();
         BeanUtils.copyProperties(article, vo);
         if (CollectionUtils.isEmpty(comments)) {
@@ -295,6 +296,18 @@ public class WxBizArticleController extends BaseController {
     @PostMapping
     public AjaxResult add(@RequestBody BizArticle bizArticle) {
         bizArticle.setStatus("0");
+        String key = FileUtils.getName(bizArticle.getArticleAttaUrl());
+        if ("1".equals(bizArticle.getArticleType())){
+            OssClient ossClient = ossFactory.instance();
+            try {
+                String fileName = ossClient.convertVideo(FileUtils.getName(bizArticle.getArticleAttaUrl()));
+                bizArticle.setArticleAttaUrl(bizArticle.getArticleAttaUrl().replace(key,fileName));
+                key = fileName;
+            }catch (Exception e){
+                logger.error("转换视频失败",e);
+            }
+        }
+        bizArticle.setFileName(key);
         bizArticleService.insertBizArticle(bizArticle);
         return success(bizArticle.getArticleId());
     }
@@ -314,6 +327,15 @@ public class WxBizArticleController extends BaseController {
             logger.error("上传失败", e);
             return error(e.getMessage());
         }
+    }
+    /**
+     * 上次打卡附件
+     */
+    @Log(title = "转换格式", businessType = BusinessType.INSERT)
+    @PostMapping("/convertFile")
+    public AjaxResult convent(@RequestBody BizArticle article) {
+        OssClient ossClient = ossFactory.instance();
+        return success(ossClient.convertVideo(article.getFileName()));
     }
 
     /**

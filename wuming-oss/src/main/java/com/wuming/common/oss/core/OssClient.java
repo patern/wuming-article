@@ -2,9 +2,13 @@ package com.wuming.common.oss.core;
 
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.IdUtil;
+import com.aliyun.oss.ClientBuilderConfiguration;
 import com.aliyun.oss.HttpMethod;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
+import com.aliyun.oss.common.comm.SignVersion;
+import com.aliyun.oss.model.AsyncProcessObjectRequest;
+import com.aliyun.oss.model.AsyncProcessObjectResult;
 import com.aliyun.oss.model.GeneratePresignedUrlRequest;
 import com.wuming.common.constant.Constants;
 import com.wuming.common.oss.constant.OssConstant;
@@ -39,6 +43,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.function.Consumer;
@@ -377,6 +382,24 @@ public class OssClient {
         return signedUrl.toString();
     }
 
+    public String convertVideo(String key){
+        String fileName =FileUtils.getNameNotSuffix(key) +".mp4";
+        // 创建OSSClient实例。
+        // 当OSSClient实例不再使用时，调用shutdown方法以释放资源。
+        ClientBuilderConfiguration clientBuilderConfiguration = new ClientBuilderConfiguration();
+        clientBuilderConfiguration.setSignatureVersion(SignVersion.V4);
+        // 构建视频处理样式字符串以及视频转码处理参数。
+        String style = String.format("video/convert,f_mp4,vcodec_h264");
+        // 构建异步处理指令。
+        String bucketEncoded = Base64.getUrlEncoder().withoutPadding().encodeToString(properties.getBucketName().getBytes());
+        String targetEncoded = Base64.getUrlEncoder().withoutPadding().encodeToString(fileName.getBytes());
+        String process = String.format("%s|sys/saveas,b_%s,o_%s", style, bucketEncoded, targetEncoded);
+        // 创建AsyncProcessObjectRequest对象。
+        AsyncProcessObjectRequest request = new AsyncProcessObjectRequest(properties.getBucketName(), key, process);
+        // 执行异步处理任务。
+        AsyncProcessObjectResult response = oss.asyncProcessObject(request);
+        return fileName;
+    }
 
     /**
      * 上传 byte[] 数据到 Amazon S3，使用指定的后缀构造对象键。
