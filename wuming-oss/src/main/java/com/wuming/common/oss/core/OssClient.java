@@ -20,7 +20,6 @@ import com.wuming.common.utils.DateUtils;
 import com.wuming.common.utils.SecurityUtils;
 import com.wuming.common.utils.file.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.core.parameters.P;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.ResponseInputStream;
@@ -43,9 +42,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.util.Base64;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -374,6 +375,7 @@ public class OssClient {
         // 生成预签名URL。
         GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(properties.getBucketName(),
                 objectKey, HttpMethod.PUT);
+        request.getHeaders().put("Content-Type", "video/webm");
         // 设置过期时间。
         request.setExpiration(expiration);
         // 通过HTTP PUT请求生成预签名URL。
@@ -382,8 +384,58 @@ public class OssClient {
         return signedUrl.toString();
     }
 
-    public String convertVideo(String key){
-        String fileName =FileUtils.getNameNotSuffix(key) +".mp4";
+    public Map<String, String> getPostOssUploadPath(String objectKey, Long expired) {
+        String key = SecurityUtils.getLoginUser().getUser().getUserId() +
+                "_" + Calendar.getInstance().getTimeInMillis() + "." + FileUtils.getSuffix(objectKey);
+        // 设置表单Map。
+        Map<String, String> formFields = new LinkedHashMap<String, String>();
+        // 设置文件名称。
+        formFields.put("key", key);
+        // 设置Content-Disposition。
+        formFields.put("Content-Disposition", "attachment;filename=" + key);
+        // 设置回调参数。
+        // Callback callback = new Callback();
+        // 设置回调服务器地址，例如http://oss-demo.oss-cn-hangzhou.aliyuncs.com:23450或http://127.0.0.1:9090。
+        // callback.setCallbackUrl(callbackServerUrl);
+        // 设置回调请求消息头中Host的值，如oss-cn-hangzhou.aliyuncs.com。
+        // callback.setCallbackHost(callbackServerHost);
+        // 设置发起回调时请求Body的值。
+        // callback.setCallbackBody("{\\\"mimeType\\\":${mimeType},\\\"size\\\":${size}}");
+        // 设置发起回调请求的Content-Type。
+        // callback.setCalbackBodyType(Callback.CalbackBodyType.JSON);
+        // 设置发起回调请求的自定义参数，由Key和Value组成，Key必须以x:开始，且必须小写。
+        // callback.addCallbackVar("x:var1", "value1");
+        // callback.addCallbackVar("x:var2", "value2");
+        // 在表单Map中设置回调参数。
+        // setCallBack(formFields, callback);
+        // 设置OSSAccessKeyId。
+        formFields.put("OSSAccessKeyId", properties.getAccessKey());
+
+        long now = System.currentTimeMillis() / 1000;
+        ZonedDateTime dtObj = ZonedDateTime.ofInstant(Instant.ofEpochSecond(now), ZoneId.of("UTC"));
+        ZonedDateTime dtObjPlus3h = dtObj.plusSeconds(expired);
+        //请求过期时间
+        DateTimeFormatter expirationTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        String expirationTime = dtObjPlus3h.format(expirationTimeFormatter);
+
+        List<Object> conditions = new ArrayList<>();
+        Map<String, String> bucketCondition = new HashMap<>();
+        bucketCondition.put("bucket", "bucketname");    //请将<bucketname>替换为您的实际Bucket名称
+        conditions.add(bucketCondition);
+
+        String policy = "{\"expiration\":\""+expirationTime+"\",\"conditions\":[{\"bucket\":\""+properties.getBucketName()+"\"}]}";
+        String encodePolicy = new String(org.apache.commons.codec.binary.Base64.encodeBase64(policy.getBytes()));
+        // 设置policy。
+        formFields.put("policy", encodePolicy);
+        // 生成签名。
+        String signaturecom = com.aliyun.oss.common.auth.ServiceSignature.create().computeSignature(properties.getSecretKey(), encodePolicy);
+        // 设置签名。
+        formFields.put("Signature", signaturecom);
+        return formFields;
+    }
+
+    public String convertVideo(String key) {
+        String fileName = FileUtils.getNameNotSuffix(key) + ".mp4";
         // 创建OSSClient实例。
         // 当OSSClient实例不再使用时，调用shutdown方法以释放资源。
         ClientBuilderConfiguration clientBuilderConfiguration = new ClientBuilderConfiguration();

@@ -297,7 +297,8 @@ public class WxBizArticleController extends BaseController {
     public AjaxResult add(@RequestBody BizArticle bizArticle) {
         bizArticle.setStatus("0");
         String key = FileUtils.getName(bizArticle.getArticleAttaUrl());
-        if ("1".equals(bizArticle.getArticleType())){
+        String suffix = FileUtils.getSuffix(bizArticle.getArticleAttaUrl());
+        if ("1".equals(bizArticle.getArticleType()) && !suffix.toLowerCase().endsWith("mp4")){
             OssClient ossClient = ossFactory.instance();
             try {
                 String fileName = ossClient.convertVideo(FileUtils.getName(bizArticle.getArticleAttaUrl()));
@@ -345,7 +346,7 @@ public class WxBizArticleController extends BaseController {
     @PostMapping("/getFileUploadPath")
     public AjaxResult getFileUploadPath(@RequestBody BizArticle bizArticle) {
         OssClient ossClient = ossFactory.instance();
-        String result = ossClient.getOssUploadPath(bizArticle.getFileName(), 60l);
+        Map<String,String> result = ossClient.getPostOssUploadPath(bizArticle.getFileName(), 60l);
         return AjaxResult.success("成功",result);
     }
 
