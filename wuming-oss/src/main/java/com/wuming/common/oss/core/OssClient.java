@@ -40,7 +40,6 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -418,11 +417,6 @@ public class OssClient {
         DateTimeFormatter expirationTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         String expirationTime = dtObjPlus3h.format(expirationTimeFormatter);
 
-        List<Object> conditions = new ArrayList<>();
-        Map<String, String> bucketCondition = new HashMap<>();
-        bucketCondition.put("bucket", "bucketname");    //请将<bucketname>替换为您的实际Bucket名称
-        conditions.add(bucketCondition);
-
         String policy = "{\"expiration\":\""+expirationTime+"\",\"conditions\":[{\"bucket\":\""+properties.getBucketName()+"\"}]}";
         String encodePolicy = new String(org.apache.commons.codec.binary.Base64.encodeBase64(policy.getBytes()));
         // 设置policy。
@@ -441,7 +435,7 @@ public class OssClient {
         ClientBuilderConfiguration clientBuilderConfiguration = new ClientBuilderConfiguration();
         clientBuilderConfiguration.setSignatureVersion(SignVersion.V4);
         // 构建视频处理样式字符串以及视频转码处理参数。
-        String style = String.format("video/convert,f_mp4,vcodec_h264");
+        String style = String.format("video/convert,f_mp4,vcodec_h264,fps_25,fpsopt_1,s_1280x");
         // 构建异步处理指令。
         String bucketEncoded = Base64.getUrlEncoder().withoutPadding().encodeToString(properties.getBucketName().getBytes());
         String targetEncoded = Base64.getUrlEncoder().withoutPadding().encodeToString(fileName.getBytes());
